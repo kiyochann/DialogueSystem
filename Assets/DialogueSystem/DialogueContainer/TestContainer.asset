@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48b16d7b9be226e48bb5a5ed989bad6e, type: 3}
+  m_Name: TestContainer
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueContainer
+  startNodeID: node_01
+  allNodes:
+  - nodeID: node_01
+    speakerID: "\u4E3B\u4EBA\u516C"
+    rawText: "\u300C\u304A\u3044\u3001[se:clip=ping]\u305D\u3053\u306B\u3044\u308B\u306E\u306F\u8AB0\u3060\uFF01[fade_out:time=1.5]\u300D"
+    nextNodeID: node_02
+    choices: []
+    graphPosition: {x: -6.4, y: 56}
+  - nodeID: node_02
+    speakerID: "\uFF1F\uFF1F\uFF1F"
+    rawText: "\u300C\u2026\u2026\u3075\u3075\u3075\u3002\u6C17\u3065\u304F\u306E\u304C\u9045\u304B\u3063\u305F\u306A\u3002[fade_in:time=1.0]\u300D"
+    nextNodeID: node_03
+    choices: []
+    graphPosition: {x: 258.4, y: 56}
+  - nodeID: node_03
+    speakerID: "\u4E3B\u4EBA\u516C"
+    rawText: "\u300C\u3057\u307E\u3063\u3001\u7F60\u304B\uFF01\uFF1F\u300D"
+    nextNodeID: 
+    choices: []
+    graphPosition: {x: 523.2, y: 56}
