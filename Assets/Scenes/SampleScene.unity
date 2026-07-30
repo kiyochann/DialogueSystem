@@ -182,6 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70598b1fe4e7e5d4ebb06f4b88a2b650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueManager
+  currentContainer: {fileID: 11400000, guid: 873923e5ba134f84e889a6c710359d11, type: 2}
 --- !u!4 &160697852
 Transform:
   m_ObjectHideFlags: 0
@@ -846,7 +847,7 @@ GameObject:
   - component: {fileID: 1328037125}
   - component: {fileID: 1328037124}
   m_Layer: 5
-  m_Name: SpeakerNameex
+  m_Name: SpeakerName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
