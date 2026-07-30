@@ -18,6 +18,7 @@ namespace Runtime.Dialogue.Commands
                 DialogueEventDispatcher.Instance.RegisterHandler(this);
 
             // 最初は透明にしておく
+            /*
             if (fadePanel != null)
             {
                 Color c = fadePanel.color;
@@ -25,6 +26,7 @@ namespace Runtime.Dialogue.Commands
                 fadePanel.color = c;
                 fadePanel.gameObject.SetActive(false);
             }
+            */
         }
 
         public void Execute(DialogueCommand command, Action onComplete)

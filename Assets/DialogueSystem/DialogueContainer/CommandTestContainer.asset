@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcc6dcf3673927a488b8d4f7d6fd5ffb, type: 3}
   m_Name: CommandTestContainer
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Core.DialogueContainer
-  startNodeID: Node_7600c
+  startNodeID: Node_8f4cb
   allNodes:
   - graphPosition: {x: 100, y: 100}
     nextNodeID: Node_22abf
@@ -27,20 +27,60 @@ MonoBehaviour:
     dialogueText: "\u2026\u20261\u79D2\u5F85\u6A5F\u3057\u307E\u3057\u305F\u3002[se:clip=test_sound]"
     choices: []
   - graphPosition: {x: 895.2, y: 100}
-    nextNodeID: Node_587c3
+    nextNodeID: Node_1bb00
     nodeID: Node_92275
     speakerName: 
     dialogueText: "\u4ECA\u3001\u52B9\u679C\u97F3\u304C\u9CF4\u3063\u305F\u306F\u305A\u3067\u3059\u3002[wait:time=0.5]"
     choices: []
-  - graphPosition: {x: 1283.2, y: 100}
-    nextNodeID: Node_b7b5f
+  - graphPosition: {x: 1296.8, y: 100}
+    nextNodeID: Node_587c3
+    nodeID: Node_1bb00
+    speakerName: 
+    dialogueText: "[fade_out:time=0.5]\n\u753B\u9762\u3092\u6697\u304F\u3057\u307E\u3057\u305F\u3002[wait:time=1.0]\n\u305D\u308C\u3067\u306F\u3001[fade_in:time=1.5]\u304B\u3051\u3066\u660E\u308B\u304F\u623B\u3057\u307E\u3059\u3002\n\u660E\u8EE2\u5B8C\u4E86\uFF01"
+    choices: []
+  - graphPosition: {x: 1701.6, y: 100}
+    nextNodeID: Node_26899
     nodeID: Node_587c3
     speakerName: 
     dialogueText: "\u305D\u308C\u3067\u306F\u30012\u79D2\u304B\u3051\u3066\u753B\u9762\u3092\u6697\u8EE2\u3055\u305B\u307E\u3059\u3002[fade_out:time=2.0]"
     choices: []
-  - graphPosition: {x: 1761.6, y: 100}
+  - graphPosition: {x: -216.8, y: 100}
+    nextNodeID: Node_7600c
+    nodeID: Node_8f4cb
+    speakerName: 
+    dialogueText: '[fade_in:time=1.5]'
+    choices: []
+  - graphPosition: {x: 2629.6, y: 255.20001}
+    nextNodeID: Node_b7b5f
+    nodeID: Node_c3146
+    speakerName: 
+    dialogueText: "\u3044"
+    choices: []
+  - graphPosition: {x: 2901.6, y: 100}
     nextNodeID: 
     nodeID: Node_b7b5f
     speakerName: 
     dialogueText: "\u6697\u8EE2\u5B8C\u4E86\uFF01\u30C6\u30B9\u30C8\u6210\u529F\u3067\u3059\u3002"
     choices: []
+  - graphPosition: {x: 2629.6, y: 100}
+    nextNodeID: Node_b7b5f
+    nodeID: Node_1a555
+    speakerName: 
+    dialogueText: "\u3042"
+    choices: []
+  - graphPosition: {x: 2192.8, y: 100}
+    nextNodeID: 
+    nodeID: Node_26899
+    speakerName: 
+    dialogueText: "\u5206\u5C90\u30C6\u30B9\u30C8"
+    choices:
+    - choiceText: New Choice
+      targetNodeID: Node_1a555
+      branchType: 0
+      conditionKey: 
+      conditionValue: 0
+    - choiceText: New Choice
+      targetNodeID: Node_c3146
+      branchType: 0
+      conditionKey: 
+      conditionValue: 0

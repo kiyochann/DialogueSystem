@@ -98,24 +98,38 @@ namespace Runtime.Dialogue.Logic
 
             CurrentView?.DisplaySentence(speakerID, cleanText, commands, () =>
             {
-                if (currentNode.choices == null || currentNode.choices.Count == 0)
-                {
-                    // 👈 変更: 勝手に進めず、クリック待ち状態にする
-                    CurrentState = DialogueState.WaitingForAdvance;
-                }
-                else
+                // 1. 選択肢が存在する場合の処理
+                if (currentNode.choices != null && currentNode.choices.Count > 0)
                 {
                     CurrentState = DialogueState.WaitingForChoice;
-                    bool handled = DialogueBranchDispatcher.Instance.TryHandleBranch(currentNode.choices, (nextID) =>
-                    {
-                        CurrentState = DialogueState.Playing;
-                        StartDialogue(nextID);
-                    });
 
-                    if (!handled)
+                    if (DialogueBranchDispatcher.Instance != null)
                     {
-                        Debug.LogWarning("どの分岐ハンドラーも選択肢を処理できませんでした。");
+                        bool handled = DialogueBranchDispatcher.Instance.TryHandleBranch(currentNode.choices, (nextID) =>
+                        {
+                            CurrentState = DialogueState.Playing;
+                            StartDialogue(nextID);
+                        });
+
+                        if (!handled)
+                        {
+                            // ハンドラーの処理に失敗した場合は、進行不能を防ぐため文字送り待ちに救済
+                            Debug.LogWarning("[DialogueManager] 選択肢を処理できるハンドラーが見つかりませんでした。通常の文字送り待ちに移行します。");
+                            CurrentState = DialogueState.WaitingForAdvance;
+                        }
                     }
+                    else
+                    {
+                        // Dispatcher がない場合も、進行不能を防ぐため文字送り待ちに救済
+                        Debug.LogError("[DialogueManager] DialogueBranchDispatcher がシーンにありません！通常の文字送り待ちに移行します。");
+                        CurrentState = DialogueState.WaitingForAdvance;
+                    }
+                }
+                // 2. 選択肢がない場合（通常の文章）の処理
+                else
+                {
+                    // 文字表示が完了したので、プレイヤーの入力（スペースキー等）を待つ状態にする
+                    CurrentState = DialogueState.WaitingForAdvance;
                 }
             });
         }

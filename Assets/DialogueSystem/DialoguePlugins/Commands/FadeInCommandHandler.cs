@@ -1,15 +1,19 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI; // 👈 追加
 
 namespace Runtime.Dialogue.Commands
 {
     /// <summary>
-    /// [fade_in] �R�}���h����������v���O�C��
+    /// [fade_in] コマンドを処理するプラグイン
     /// </summary>
     public class FadeInCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "fade_in";
+
+        [Tooltip("明転用の黒い画像（画面全体を覆うUI）をセットしてください（FadeOutと同じものでOKです）")]
+        [SerializeField] private Image fadePanel;
 
         private void Start()
         {
@@ -28,14 +32,48 @@ namespace Runtime.Dialogue.Commands
         public void ForceComplete(DialogueCommand command)
         {
             StopAllCoroutines();
-            Debug.Log("[FadeIn] ��ʂ��y��u�Œʏ�\���z�ɖ߂��܂��i���o���[�v�j");
+            if (fadePanel != null)
+            {
+                // 一瞬で完全に透明（明転）にして非表示にする
+                Color c = fadePanel.color;
+                c.a = 0f;
+                fadePanel.color = c;
+                fadePanel.gameObject.SetActive(false);
+            }
+            Debug.Log("[FadeIn] スキップ：一瞬で明転させました");
         }
 
         private IEnumerator FadeRoutine(float duration, Action onComplete)
         {
-            Debug.Log($"[FadeIn] ���]�J�n�B{duration}�b �����Ď��s��...");
-            yield return new WaitForSeconds(duration);
-            Debug.Log($"[FadeIn] ���]�����B");
+            if (fadePanel == null)
+            {
+                Debug.LogWarning("[FadeIn] fadePanelが設定されていません！");
+                onComplete?.Invoke();
+                yield break;
+            }
+
+            fadePanel.gameObject.SetActive(true);
+            Color color = fadePanel.color;
+
+            // フェードイン開始時は真っ暗（Alpha = 1）の状態からスタート
+            color.a = 1f;
+            fadePanel.color = color;
+
+            float timer = 0f;
+
+            // duration秒かけてAlphaを1から0へ減少させる
+            while (timer < duration)
+            {
+                timer += Time.deltaTime;
+                color.a = Mathf.Clamp01(1f - (timer / duration));
+                fadePanel.color = color;
+                yield return null; // 1フレーム待機
+            }
+
+            color.a = 0f;
+            fadePanel.color = color;
+            fadePanel.gameObject.SetActive(false); // 完全に透明になったら非表示に
+
             onComplete?.Invoke();
         }
     }
