@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 👇 Core名前空間に統一
 namespace Runtime.Dialogue.Core
 {
     [Serializable]
     public class DialogueNode
     {
-        public Vector2 graphPosition; // 👈 追加
-        public string nextNodeID;     // 👈 追加
+        public Vector2 graphPosition;
+        public string nextNodeID;
 
         public string nodeID;
+        public string speakerName; // 話者名
         public string dialogueText;
         public List<ChoiceData> choices = new List<ChoiceData>();
     }
@@ -22,6 +22,10 @@ namespace Runtime.Dialogue.Core
         public string choiceText;
         public string targetNodeID;
         public BranchType branchType;
+
+        // 分岐設定用データ
+        public string conditionKey = "";
+        public int conditionValue = 0;
     }
 
     public enum BranchType

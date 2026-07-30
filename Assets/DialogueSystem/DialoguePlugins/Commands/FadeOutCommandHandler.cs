@@ -1,49 +1,76 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI; // ğŸ‘ˆ è¿½åŠ 
 
 namespace Runtime.Dialogue.Commands
 {
-    /// <summary>
-    /// [fade_out] ƒRƒ}ƒ“ƒh‚ğˆ—‚·‚éƒvƒ‰ƒOƒCƒ“
-    /// </summary>
     public class FadeOutCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "fade_out";
 
+        [Tooltip("æš—è»¢ç”¨ã®é»’ã„ç”»åƒï¼ˆç”»é¢å…¨ä½“ã‚’è¦†ã†UIï¼‰ã‚’ã‚»ãƒƒãƒˆã—ã¦ãã ã•ã„")]
+        [SerializeField] private Image fadePanel;
+
         private void Start()
         {
-            // ƒQ[ƒ€ŠJn‚ÉƒfƒBƒXƒpƒbƒ`ƒƒ‚Ö©g‚ğ“o˜^
             if (DialogueEventDispatcher.Instance != null)
-            {
                 DialogueEventDispatcher.Instance.RegisterHandler(this);
+
+            // æœ€åˆã¯é€æ˜ã«ã—ã¦ãŠã
+            if (fadePanel != null)
+            {
+                Color c = fadePanel.color;
+                c.a = 0f;
+                fadePanel.color = c;
+                fadePanel.gameObject.SetActive(false);
             }
         }
 
         public void Execute(DialogueCommand command, Action onComplete)
         {
-            // DialogueCommand‚ÌV‚µ‚¢•Ö—˜ƒƒ\ƒbƒh‚ğg‚Á‚ÄAƒpƒ‰ƒ[ƒ^(time)‚ğæ“¾
             float duration = command.GetFloat("time", 1.0f);
             StartCoroutine(FadeRoutine(duration, onComplete));
         }
 
         public void ForceComplete(DialogueCommand command)
         {
-            // ƒXƒLƒbƒv‚³‚ê‚½‚çis’†‚ÌƒRƒ‹[ƒ`ƒ“‚ğ~‚ßAˆêu‚ÅÅIó‘Ô‚É‚·‚é
             StopAllCoroutines();
-            Debug.Log("[FadeOut] ‰æ–Ê‚ğyˆêu‚Å^‚ÁˆÃz‚É‚µ‚Ü‚·i‰‰oƒ[ƒvj");
-
-            // ¦‚±‚±‚ÉÀÛ‚Ìu‰æ–Ê‚ğ^‚Á•‚É‚·‚éˆ—v‚ğ‘‚­
+            if (fadePanel != null)
+            {
+                // ä¸€ç¬ã§çœŸã£é»’ã«ã™ã‚‹
+                Color c = fadePanel.color;
+                c.a = 1f;
+                fadePanel.color = c;
+                fadePanel.gameObject.SetActive(true);
+            }
+            Debug.Log("[FadeOut] ã‚¹ã‚­ãƒƒãƒ—ï¼šä¸€ç¬ã§çœŸã£é»’ã«ã—ã¾ã—ãŸ");
         }
 
         private IEnumerator FadeRoutine(float duration, Action onComplete)
         {
-            Debug.Log($"[FadeOut] ˆÃ“]ŠJnB{duration}•b ‚©‚¯‚ÄÀs’†...");
+            if (fadePanel == null)
+            {
+                Debug.LogWarning("[FadeOut] fadePanelãŒè¨­å®šã•ã‚Œã¦ã„ã¾ã›ã‚“ï¼");
+                onComplete?.Invoke();
+                yield break;
+            }
 
-            // ¦‚±‚±‚ÉÀÛ‚Ìu‰æ–Ê‚ğ™X‚É•‚­‚·‚éˆ—v‚ğ‘‚­
-            yield return new WaitForSeconds(duration);
+            fadePanel.gameObject.SetActive(true);
+            Color color = fadePanel.color;
+            float timer = 0f;
 
-            Debug.Log($"[FadeOut] ˆÃ“]Š®—¹B");
+            // durationç§’ã‹ã‘ã¦Alphaã‚’0ã‹ã‚‰1ã¸
+            while (timer < duration)
+            {
+                timer += Time.deltaTime;
+                color.a = Mathf.Clamp01(timer / duration);
+                fadePanel.color = color;
+                yield return null; // 1ãƒ•ãƒ¬ãƒ¼ãƒ å¾…æ©Ÿ
+            }
+
+            color.a = 1f;
+            fadePanel.color = color;
             onComplete?.Invoke();
         }
     }

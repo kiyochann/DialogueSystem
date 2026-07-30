@@ -106,18 +106,35 @@ namespace Runtime.Dialogue
 
             while (charCount < currentFullText.Length)
             {
+                int pendingCommands = 0; // 👈 追加: 完了待ちコマンドのカウンター
+
                 if (currentCommands != null)
                 {
                     foreach (var cmd in currentCommands)
                     {
                         if (cmd != null && !cmd.IsExecuted && cmd.CharacterIndex == charCount)
                         {
+                            pendingCommands++; // コマンド実行前にカウントアップ
+
                             if (DialogueEventDispatcher.Instance != null)
                             {
-                                DialogueEventDispatcher.Instance.ExecuteCommand(cmd, null);
+                                // 👈 修正: コールバックを受け取り、完了時にカウントを下げる
+                                DialogueEventDispatcher.Instance.ExecuteCommand(cmd, () => {
+                                    pendingCommands--;
+                                });
+                            }
+                            else
+                            {
+                                pendingCommands--;
                             }
                         }
                     }
+                }
+
+                // 👈 追加: 発火した演出が全て完了するまで文字送りを一時停止
+                if (pendingCommands > 0)
+                {
+                    yield return new WaitUntil(() => pendingCommands <= 0);
                 }
 
                 if (bodyText != null)

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
+using UnityEditor.UIElements;
 using Runtime.Dialogue.Core;
 
 namespace DialogueSystem.Editor
@@ -33,8 +34,6 @@ namespace DialogueSystem.Editor
 
             RefreshExpandedState();
             RefreshPorts();
-
-            // 👈 追加: 初期化時にNextポートの表示状態を更新
             UpdateNextPortVisibility();
         }
 
@@ -47,122 +46,144 @@ namespace DialogueSystem.Editor
 
         private void CreateOutputPort()
         {
-            // 👈 変更: nextPort変数に保持する
             nextPort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
             nextPort.portName = "Next";
-            nextPort.userData = null;
             outputContainer.Add(nextPort);
         }
 
         private void CreateTextFields()
         {
-            // 🎯 目標1: ノードIDを自由に変更できる入力欄
+            // Node ID
             var idField = new TextField("Node ID") { value = nodeData.nodeID };
             idField.RegisterValueChangedCallback(evt =>
             {
                 nodeData.nodeID = evt.newValue;
-                this.title = evt.newValue; // タイトル表示も連動させる
+                this.title = evt.newValue;
+                this.viewDataKey = evt.newValue;
             });
+            PreventInterference(idField);
             extensionContainer.Add(idField);
 
-            // 🎯 目標4: 分岐タイプを「ノード単位」にまとめる
-            BranchType currentBranchType = nodeData.choices.Count > 0 ? nodeData.choices[0].branchType : BranchType.DefaultChoice;
-            var branchTypeField = new EnumField("Branch Type", currentBranchType);
-            branchTypeField.RegisterValueChangedCallback(evt =>
-            {
-                // 見た目は1つにし、裏側で全選択肢のタイプを一括変更する（ランタイム変更不要）
-                var newType = (BranchType)evt.newValue;
-                foreach (var choice in nodeData.choices)
-                {
-                    choice.branchType = newType;
-                }
-            });
-            extensionContainer.Add(branchTypeField);
+            // 話者名
+            var speakerField = new TextField("Speaker") { value = nodeData.speakerName };
+            speakerField.RegisterValueChangedCallback(evt => nodeData.speakerName = evt.newValue);
+            PreventInterference(speakerField);
+            extensionContainer.Add(speakerField);
 
-            // 🎯 目標5: セリフが右端で自動的に改行（折り返し）されるようにする
-            var textTextField = new TextField("Text")
+            // 本文
+            var dialogueTextField = new TextField("Dialogue Text")
             {
                 value = nodeData.dialogueText,
-                multiline = true // 改行を許可
+                multiline = true
             };
-            textTextField.style.whiteSpace = WhiteSpace.Normal; // 👈 自動折り返し設定
-            textTextField.style.minHeight = 60;                 // 👈 高さを少し確保
+            dialogueTextField.RegisterValueChangedCallback(evt => nodeData.dialogueText = evt.newValue);
+            PreventInterference(dialogueTextField);
+            extensionContainer.Add(dialogueTextField);
 
-            textTextField.RegisterValueChangedCallback(evt =>
-            {
-                nodeData.dialogueText = evt.newValue;
-            });
-            extensionContainer.Add(textTextField);
-
+            // 選択肢追加ボタン
             var addChoiceButton = new Button(() =>
             {
-                var currentType = (BranchType)branchTypeField.value;
-                var newChoice = new ChoiceData { choiceText = "新しい選択肢", targetNodeID = "", branchType = currentType };
+                var newChoice = new ChoiceData
+                {
+                    choiceText = "New Choice",
+                    branchType = BranchType.DefaultChoice,
+                    conditionKey = "",
+                    conditionValue = 0
+                };
                 nodeData.choices.Add(newChoice);
+                int choiceIndex = nodeData.choices.Count - 1;
                 CreateChoiceView(newChoice);
-                AddChoicePort(newChoice, nodeData.choices.Count - 1);
+                AddChoicePort(newChoice, choiceIndex);
+                RefreshExpandedState();
             })
             { text = "Add Choice" };
             extensionContainer.Add(addChoiceButton);
         }
 
-        public void CreateChoiceView(ChoiceData choice)
+        private void CreateChoiceView(ChoiceData choice)
         {
-            VisualElement choiceContainer = new VisualElement();
+            var choiceContainer = new VisualElement();
             choiceContainer.style.flexDirection = FlexDirection.Row;
+            choiceContainer.style.alignItems = Align.Center;
+            choiceContainer.style.marginBottom = 2;
 
-            
-            var choiceTextField = new TextField
-            {
-                value = choice.choiceText
-            };
+            // 1. 選択肢テキスト
+            var choiceTextField = new TextField { value = choice.choiceText };
+            choiceTextField.style.flexGrow = 1;
+            choiceTextField.style.minWidth = 60;
             choiceTextField.RegisterValueChangedCallback(evt =>
             {
                 choice.choiceText = evt.newValue;
-                var port = outputContainer.Children().OfType<Port>().FirstOrDefault(p => p.userData is int idx && idx == nodeData.choices.IndexOf(choice));
-                if (port != null) port.portName = evt.newValue;
+                int choiceIndex = nodeData.choices.IndexOf(choice);
+                if (choiceIndex >= 0)
+                {
+                    var ports = outputContainer.Children().OfType<Port>().Where(p => p.userData is int).ToList();
+                    var port = ports.FirstOrDefault(p => (int)p.userData == choiceIndex);
+                    if (port != null) port.portName = evt.newValue;
+                }
             });
+            PreventInterference(choiceTextField);
             choiceContainer.Add(choiceTextField);
 
+            // 2. BranchType (Enum)
+            var branchTypeField = new EnumField(choice.branchType);
+            branchTypeField.style.width = 80;
+            branchTypeField.RegisterValueChangedCallback(evt => choice.branchType = (BranchType)evt.newValue);
+            PreventInterference(branchTypeField);
+            choiceContainer.Add(branchTypeField);
+
+            // 3. Key (ラベルとテキストフィールドを分離して潰れを防止)
+            var keyLabel = new Label("Key:");
+            keyLabel.style.fontSize = 10;
+            keyLabel.style.marginLeft = 4;
+            choiceContainer.Add(keyLabel);
+
+            var keyField = new TextField { value = choice.conditionKey };
+            keyField.style.width = 65;
+            keyField.RegisterValueChangedCallback(evt => choice.conditionKey = evt.newValue);
+            PreventInterference(keyField);
+            choiceContainer.Add(keyField);
+
+            // 4. Val (ラベルと数値フィールドを分離して潰れを防止)
+            var valLabel = new Label("Val:");
+            valLabel.style.fontSize = 10;
+            valLabel.style.marginLeft = 4;
+            choiceContainer.Add(valLabel);
+
+            var valField = new IntegerField { value = choice.conditionValue };
+            valField.style.width = 45;
+            valField.RegisterValueChangedCallback(evt => choice.conditionValue = evt.newValue);
+            PreventInterference(valField);
+            choiceContainer.Add(valField);
+
+            // 5. 削除ボタン
             var deleteButton = new Button(() =>
             {
-                int idx = nodeData.choices.IndexOf(choice);
-                if (idx >= 0)
+                int index = nodeData.choices.IndexOf(choice);
+                if (index >= 0)
                 {
-                    nodeData.choices.RemoveAt(idx);
-
-                    var portToRemove = outputContainer.Children().OfType<Port>().FirstOrDefault(p => p.userData is int i && i == idx);
-                    if (portToRemove != null)
-                    {
-                        if (portToRemove.connected)
-                        {
-                            var edges = portToRemove.connections.ToList();
-                            foreach (var e in edges)
-                            {
-                                if (e == null) continue;
-                                try { if (e.input != null) e.input.Disconnect(e); if (e.output != null) e.output.Disconnect(e); } catch { }
-                                e.RemoveFromHierarchy();
-                            }
-                        }
-                        outputContainer.Remove(portToRemove);
-                    }
-
+                    nodeData.choices.RemoveAt(index);
                     var ports = outputContainer.Children().OfType<Port>().Where(p => p.userData is int).ToList();
-                    for (int i = 0; i < ports.Count; i++)
+                    var targetPort = ports.FirstOrDefault(p => (int)p.userData == index);
+                    if (targetPort != null)
                     {
-                        ports[i].userData = i;
-                        if (i < nodeData.choices.Count) ports[i].portName = nodeData.choices[i].choiceText;
+                        var edges = targetPort.connections.ToList();
+                        foreach (var edge in edges) edge.input?.Disconnect(edge);
+                        outputContainer.Remove(targetPort);
+                    }
+                    var remainingPorts = outputContainer.Children().OfType<Port>().Where(p => p.userData is int).ToList();
+                    for (int i = 0; i < remainingPorts.Count; i++)
+                    {
+                        remainingPorts[i].userData = i;
+                        if (i < nodeData.choices.Count) remainingPorts[i].portName = nodeData.choices[i].choiceText;
                     }
                 }
                 extensionContainer.Remove(choiceContainer);
                 RefreshPorts();
                 RefreshExpandedState();
-
                 UpdateNextPortVisibility();
             })
-            {
-                text = "X"
-            };
+            { text = "X" };
             choiceContainer.Add(deleteButton);
 
             extensionContainer.Add(choiceContainer);
@@ -176,7 +197,6 @@ namespace DialogueSystem.Editor
             outputContainer.Add(generatedPort);
             RefreshPorts();
             RefreshExpandedState();
-
             UpdateNextPortVisibility();
         }
 
@@ -186,6 +206,13 @@ namespace DialogueSystem.Editor
             {
                 nextPort.style.display = nodeData.choices.Count > 0 ? DisplayStyle.None : DisplayStyle.Flex;
             }
+        }
+
+        // 入力割り込み防止用共通メソッド
+        private void PreventInterference(VisualElement element)
+        {
+            element.RegisterCallback<MouseDownEvent>(evt => evt.StopPropagation());
+            element.RegisterCallback<KeyDownEvent>(evt => evt.StopPropagation());
         }
     }
 }

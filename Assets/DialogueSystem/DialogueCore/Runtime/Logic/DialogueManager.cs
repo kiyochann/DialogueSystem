@@ -91,7 +91,7 @@ namespace Runtime.Dialogue.Logic
                 return;
             }
 
-            string speakerID = "";
+            string speakerID = currentNode.speakerName;
             string cleanText;
             List<DialogueCommand> commands;
             DialogueTagParser.ParseText(currentNode.dialogueText, out cleanText, out commands);
