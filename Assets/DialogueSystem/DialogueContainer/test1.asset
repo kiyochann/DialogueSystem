@@ -14,43 +14,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueContainer
   startNodeID: 20707b34-5c10-4a32-92e3-680bd857898e
   allNodes:
-  - graphPosition: {x: -234.4, y: 56}
-    nextNodeID: 958addd1-880e-42bc-8ea4-bdfe47365e5c
+  - graphPosition: {x: -320, y: 56}
+    nextNodeID: 
     nodeID: 20707b34-5c10-4a32-92e3-680bd857898e
     dialogueText: aaaaa
     choices:
     - choiceText: a
       targetNodeID: 2f0407a8-2446-4a49-8cfb-3c002676495f
-      branchType: 0
+      branchType: 2
     - choiceText: b
       targetNodeID: 0ccb635d-3a4f-4779-9882-67c82a6595b6
-      branchType: 0
-  - graphPosition: {x: 150.4, y: 176}
+      branchType: 2
+  - graphPosition: {x: 124.8, y: 56}
     nextNodeID: 3f52be3f-e12c-4260-a30d-0354b76ae485
     nodeID: 2f0407a8-2446-4a49-8cfb-3c002676495f
-    dialogueText: bbbbbb
+    dialogueText: 'bbbbbbdddddddddddddddddddddddddd
+
+      dddddddddddddddddd'
     choices: []
-  - graphPosition: {x: 150.4, y: 296}
-    nextNodeID: 76d2b7dc-e14d-41f5-9b1f-4e27dc098604
-    nodeID: 0ccb635d-3a4f-4779-9882-67c82a6595b6
-    dialogueText: cccccc
-    choices: []
-  - graphPosition: {x: 147.2, y: 56}
-    nextNodeID: c78ca9a1-24ae-4ebb-a8cf-f27c073f2bef
-    nodeID: 958addd1-880e-42bc-8ea4-bdfe47365e5c
-    dialogueText: eeeeee
-    choices: []
-  - graphPosition: {x: 467.2, y: 56}
-    nextNodeID: 
-    nodeID: c78ca9a1-24ae-4ebb-a8cf-f27c073f2bef
-    dialogueText: ee
-    choices: []
-  - graphPosition: {x: 467.2, y: 176}
+  - graphPosition: {x: 499.2, y: 56}
     nextNodeID: 
     nodeID: 3f52be3f-e12c-4260-a30d-0354b76ae485
     dialogueText: bb
     choices: []
-  - graphPosition: {x: 467.2, y: 296}
+  - graphPosition: {x: 120.8, y: 253.6}
+    nextNodeID: 76d2b7dc-e14d-41f5-9b1f-4e27dc098604
+    nodeID: 0ccb635d-3a4f-4779-9882-67c82a6595b6
+    dialogueText: cccccc
+    choices: []
+  - graphPosition: {x: 499.2, y: 253.6}
     nextNodeID: 
     nodeID: 76d2b7dc-e14d-41f5-9b1f-4e27dc098604
     dialogueText: ccc

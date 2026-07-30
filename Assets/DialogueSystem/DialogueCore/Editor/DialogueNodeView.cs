@@ -13,7 +13,7 @@ namespace DialogueSystem.Editor
 
         public DialogueNode nodeData;
         public Port inputPort;
-        public Port outputPort;
+        public Port nextPort;
 
         public DialogueNodeView(DialogueNode nodeData)
         {
@@ -33,6 +33,9 @@ namespace DialogueSystem.Editor
 
             RefreshExpandedState();
             RefreshPorts();
+
+            // 👈 追加: 初期化時にNextポートの表示状態を更新
+            UpdateNextPortVisibility();
         }
 
         private void CreateInputPort()
@@ -44,18 +47,47 @@ namespace DialogueSystem.Editor
 
         private void CreateOutputPort()
         {
-            var defaultOutput = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
-            defaultOutput.portName = "Next";
-            defaultOutput.userData = null;
-            outputContainer.Add(defaultOutput);
+            // 👈 変更: nextPort変数に保持する
+            nextPort = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+            nextPort.portName = "Next";
+            nextPort.userData = null;
+            outputContainer.Add(nextPort);
         }
 
         private void CreateTextFields()
         {
-            var textTextField = new TextField
+            // 🎯 目標1: ノードIDを自由に変更できる入力欄
+            var idField = new TextField("Node ID") { value = nodeData.nodeID };
+            idField.RegisterValueChangedCallback(evt =>
             {
-                value = nodeData.dialogueText
+                nodeData.nodeID = evt.newValue;
+                this.title = evt.newValue; // タイトル表示も連動させる
+            });
+            extensionContainer.Add(idField);
+
+            // 🎯 目標4: 分岐タイプを「ノード単位」にまとめる
+            BranchType currentBranchType = nodeData.choices.Count > 0 ? nodeData.choices[0].branchType : BranchType.DefaultChoice;
+            var branchTypeField = new EnumField("Branch Type", currentBranchType);
+            branchTypeField.RegisterValueChangedCallback(evt =>
+            {
+                // 見た目は1つにし、裏側で全選択肢のタイプを一括変更する（ランタイム変更不要）
+                var newType = (BranchType)evt.newValue;
+                foreach (var choice in nodeData.choices)
+                {
+                    choice.branchType = newType;
+                }
+            });
+            extensionContainer.Add(branchTypeField);
+
+            // 🎯 目標5: セリフが右端で自動的に改行（折り返し）されるようにする
+            var textTextField = new TextField("Text")
+            {
+                value = nodeData.dialogueText,
+                multiline = true // 改行を許可
             };
+            textTextField.style.whiteSpace = WhiteSpace.Normal; // 👈 自動折り返し設定
+            textTextField.style.minHeight = 60;                 // 👈 高さを少し確保
+
             textTextField.RegisterValueChangedCallback(evt =>
             {
                 nodeData.dialogueText = evt.newValue;
@@ -64,14 +96,13 @@ namespace DialogueSystem.Editor
 
             var addChoiceButton = new Button(() =>
             {
-                var newChoice = new ChoiceData { choiceText = "新しい選択肢", targetNodeID = "" };
+                var currentType = (BranchType)branchTypeField.value;
+                var newChoice = new ChoiceData { choiceText = "新しい選択肢", targetNodeID = "", branchType = currentType };
                 nodeData.choices.Add(newChoice);
                 CreateChoiceView(newChoice);
                 AddChoicePort(newChoice, nodeData.choices.Count - 1);
             })
-            {
-                text = "Add Choice"
-            };
+            { text = "Add Choice" };
             extensionContainer.Add(addChoiceButton);
         }
 
@@ -80,13 +111,7 @@ namespace DialogueSystem.Editor
             VisualElement choiceContainer = new VisualElement();
             choiceContainer.style.flexDirection = FlexDirection.Row;
 
-            var branchTypeField = new EnumField(choice.branchType);
-            branchTypeField.RegisterValueChangedCallback(evt =>
-            {
-                choice.branchType = (BranchType)evt.newValue;
-            });
-            choiceContainer.Add(branchTypeField);
-
+            
             var choiceTextField = new TextField
             {
                 value = choice.choiceText
@@ -115,12 +140,7 @@ namespace DialogueSystem.Editor
                             foreach (var e in edges)
                             {
                                 if (e == null) continue;
-                                try
-                                {
-                                    if (e.input != null) e.input.Disconnect(e);
-                                    if (e.output != null) e.output.Disconnect(e);
-                                }
-                                catch { }
+                                try { if (e.input != null) e.input.Disconnect(e); if (e.output != null) e.output.Disconnect(e); } catch { }
                                 e.RemoveFromHierarchy();
                             }
                         }
@@ -131,16 +151,14 @@ namespace DialogueSystem.Editor
                     for (int i = 0; i < ports.Count; i++)
                     {
                         ports[i].userData = i;
-                        if (i < nodeData.choices.Count)
-                        {
-                            ports[i].portName = nodeData.choices[i].choiceText;
-                        }
+                        if (i < nodeData.choices.Count) ports[i].portName = nodeData.choices[i].choiceText;
                     }
                 }
-
                 extensionContainer.Remove(choiceContainer);
                 RefreshPorts();
                 RefreshExpandedState();
+
+                UpdateNextPortVisibility();
             })
             {
                 text = "X"
@@ -158,6 +176,16 @@ namespace DialogueSystem.Editor
             outputContainer.Add(generatedPort);
             RefreshPorts();
             RefreshExpandedState();
+
+            UpdateNextPortVisibility();
+        }
+
+        private void UpdateNextPortVisibility()
+        {
+            if (nextPort != null)
+            {
+                nextPort.style.display = nodeData.choices.Count > 0 ? DisplayStyle.None : DisplayStyle.Flex;
+            }
         }
     }
 }

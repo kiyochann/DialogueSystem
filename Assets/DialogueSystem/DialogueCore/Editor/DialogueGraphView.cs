@@ -35,8 +35,9 @@ namespace DialogueSystem.Editor
             {
                 evt.menu.AppendAction("Create Node", (menuAction) =>
                 {
-                    Vector2 localPosition = this.contentViewContainer.WorldToLocal(evt.mousePosition);
-                    CreateNode("New Dialogue Node", localPosition);
+                    // 目標3: ズレを直すため、GraphView内の正しい座標変換を使用する
+                    Vector2 graphPosition = contentViewContainer.WorldToLocal(menuAction.eventInfo.mousePosition);
+                    CreateNode("New Dialogue Node", graphPosition);
                 });
             });
         }
@@ -45,7 +46,8 @@ namespace DialogueSystem.Editor
         {
             var nodeData = new DialogueNode
             {
-                nodeID = Guid.NewGuid().ToString(),
+                // 目標1: 初期IDを短く分かりやすい形式 (例: Node_a1b2c) にする
+                nodeID = "Node_" + Guid.NewGuid().ToString().Substring(0, 5),
                 dialogueText = "ここにセリフを入力",
                 graphPosition = position
             };
@@ -54,6 +56,14 @@ namespace DialogueSystem.Editor
             nodeView.SetPosition(new Rect(position, new Vector2(250, 200)));
 
             AddElement(nodeView);
+        }
+
+        public DialogueNodeView CreateNodeView(DialogueNode nodeData)
+        {
+            var nodeView = new DialogueNodeView(nodeData);
+            nodeView.SetPosition(new Rect(nodeData.graphPosition, new Vector2(250, 200)));
+            AddElement(nodeView);
+            return nodeView;
         }
 
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
@@ -67,14 +77,6 @@ namespace DialogueSystem.Editor
                 }
             });
             return compatiblePorts;
-        }
-
-        public DialogueNodeView CreateNodeView(DialogueNode nodeData)
-        {
-            var nodeView = new DialogueNodeView(nodeData);
-            nodeView.SetPosition(new Rect(nodeData.graphPosition, new Vector2(250, 200)));
-            AddElement(nodeView);
-            return nodeView;
         }
 
         /// <summary>

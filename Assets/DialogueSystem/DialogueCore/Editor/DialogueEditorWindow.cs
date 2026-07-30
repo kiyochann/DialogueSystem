@@ -199,25 +199,6 @@ namespace DialogueSystem.Editor
             { text = "Save" };
             toolbar.Add(saveButton);
 
-            // Debug toggle: GraphView の表示/非表示を切り替え（視認性確認用）
-            debugToggleButton = new Button(() =>
-            {
-                debugGraphVisible = !debugGraphVisible;
-                if (graphView != null) graphView.style.display = debugGraphVisible ? DisplayStyle.Flex : DisplayStyle.None;
-                UpdateStatus("[Debug] GraphView visible: " + debugGraphVisible);
-            })
-            { text = "Debug Show" };
-            toolbar.Add(debugToggleButton);
-
-            // Force sample node（強制表示）
-            forceSampleButton = new Button(() =>
-            {
-                graphView.CreateNode("Forced Sample", new Vector2(150, 150));
-                graphView.FrameAll();
-                UpdateStatus("[Debug] Forced sample node created");
-            })
-            { text = "Force Sample" };
-            toolbar.Add(forceSampleButton);
 
             // ステータスラベル（右端）
             statusLabel = new Label("Status: ready");

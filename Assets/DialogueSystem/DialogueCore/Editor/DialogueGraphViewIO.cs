@@ -83,13 +83,6 @@ namespace DialogueSystem.Editor
                 var nodeView = graphView.CreateNodeView(nodeData);
                 viewCache.Add(nodeData.nodeID, nodeView);
 
-                if (nodeData.choices != null && nodeData.choices.Count > 0)
-                {
-                    for (int i = 0; i < nodeData.choices.Count; i++)
-                    {
-                        nodeView.AddChoicePort(nodeData.choices[i], i);
-                    }
-                }
             }
 
             foreach (DialogueNode nodeData in container.allNodes)
