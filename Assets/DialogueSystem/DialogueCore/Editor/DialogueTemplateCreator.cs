@@ -67,9 +67,6 @@ using Runtime.Dialogue.Branching;
 
 namespace Runtime.Dialogue.Branching
 {
-    /// <summary>
-    /// カスタム分岐ハンドラーのテンプレート
-    /// </summary>
     public class CustomBranchHandler : MonoBehaviour, IDialogueBranchHandler
     {
         public int Priority => 50;
@@ -84,27 +81,14 @@ namespace Runtime.Dialogue.Branching
 
         public bool TryHandleBranch(List<ChoiceData> choices, Action<string> onBranchDecided)
         {
-            foreach (var choice in choices)
-            {
-                if (choice.branchType == BranchType.AutoBranch && choice.conditionKey == ""MyCustomKey"")
-                {
-                    int playerValue = GetPlayerValueFromGameManager(choice.conditionKey);
+            if (choices == null || choices.Count == 0) return false;
 
-                    if (playerValue >= choice.conditionValue)
-                    {
-                        Debug.Log($""[CustomBranch] 条件達成！ノード '{choice.targetNodeID}' へ遷移します。"");
-                        onBranchDecided?.Invoke(choice.targetNodeID);
-                        return true;
-                    }
-                }
-            }
+            // ▼ 自動化ポイント: 自身のクラス名とエディタで選ばれた名前が一致するか判定
+            if (choices[0].branchType != this.GetType().Name) return false;
+
+            // TODO: ここに処理を記述します
+
             return false;
-        }
-
-        private int GetPlayerValueFromGameManager(string key)
-        {
-            // TODO: ゲーム側のセーブデータやマネージャーから数値を取得する処理を記述
-            return 100;
         }
     }
 }";

@@ -86,7 +86,7 @@ namespace DialogueSystem.Editor
                 var newChoice = new ChoiceData
                 {
                     choiceText = "New Choice",
-                    branchType = BranchType.DefaultChoice,
+                    branchType = "DefaultChoice", // 修正: 文字列として初期化
                     conditionKey = "",
                     conditionValue = 0
                 };
@@ -125,14 +125,27 @@ namespace DialogueSystem.Editor
             PreventInterference(choiceTextField);
             choiceContainer.Add(choiceTextField);
 
-            // 2. BranchType (Enum)
-            var branchTypeField = new EnumField(choice.branchType);
-            branchTypeField.style.width = 80;
-            branchTypeField.RegisterValueChangedCallback(evt => choice.branchType = (BranchType)evt.newValue);
-            PreventInterference(branchTypeField);
-            choiceContainer.Add(branchTypeField);
+            // IDialogueBranchHandlerを継承しているすべてのクラスを自動検知
+            var handlerTypes = UnityEditor.TypeCache.GetTypesDerivedFrom<Runtime.Dialogue.Branching.IDialogueBranchHandler>();
 
-            // 3. Key (ラベルとテキストフィールドを分離して潰れを防止)
+            // デフォルトの選択肢 + 検知したクラス名をリスト化
+            List<string> branchOptions = new List<string> { "DefaultChoice", "AutoBranch", "SpecialUI" };
+            foreach (var t in handlerTypes)
+            {
+                if (!t.IsAbstract && !t.IsInterface && !branchOptions.Contains(t.Name))
+                {
+                    branchOptions.Add(t.Name); // ハンドラーのクラス名をそのまま選択肢に追加
+                }
+            }
+
+            // ドロップダウンフィールドを作成
+            string currentValue = branchOptions.Contains(choice.branchType) ? choice.branchType : "DefaultChoice";
+            var branchField = new DropdownField(branchOptions, currentValue);
+            branchField.style.width = 110;
+            branchField.RegisterValueChangedCallback(evt => choice.branchType = evt.newValue);
+            choiceContainer.Add(branchField); // 追加: fieldをUIに登録
+
+            // 3. Key
             var keyLabel = new Label("Key:");
             keyLabel.style.fontSize = 10;
             keyLabel.style.marginLeft = 4;
@@ -144,7 +157,14 @@ namespace DialogueSystem.Editor
             PreventInterference(keyField);
             choiceContainer.Add(keyField);
 
-            // 4. Val (ラベルと数値フィールドを分離して潰れを防止)
+            // 演算子 (Operator)
+            var opField = new EnumField(choice.conditionOperator);
+            opField.style.width = 40;
+            opField.RegisterValueChangedCallback(evt => choice.conditionOperator = (ConditionOperator)evt.newValue);
+            PreventInterference(opField);
+            choiceContainer.Add(opField);
+
+            // 4. Val
             var valLabel = new Label("Val:");
             valLabel.style.fontSize = 10;
             valLabel.style.marginLeft = 4;

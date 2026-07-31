@@ -23,7 +23,7 @@ namespace Runtime.Dialogue.Branching
             if (view != null)
             {
                 // 👈 修正: AutoBranch等の見えない分岐を除外し、通常のボタン(DefaultChoice)だけを抽出する
-                var displayChoices = choices.Where(c => c.branchType == BranchType.DefaultChoice).ToList();
+                var displayChoices = choices.Where(c => c.branchType == "DefaultChoice").ToList();
 
                 // もし画面に出せる選択肢が1つもない場合は、このハンドラーでは処理できないとして false を返す
                 if (displayChoices.Count == 0) return false;

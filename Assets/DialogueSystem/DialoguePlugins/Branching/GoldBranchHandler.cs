@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Runtime.Dialogue.Core;
@@ -8,7 +8,7 @@ public class GoldBranchHandler : MonoBehaviour, IDialogueBranchHandler
 {
     public int Priority => 80;
 
-    [SerializeField] private int playerGold = 1000; // Œ»Ý‚ÌŠŽ‹à
+    [SerializeField] private int playerGold = 1000; // ç¾åœ¨ã®æ‰€æŒé‡‘
 
     private void Start()
     {
@@ -20,19 +20,38 @@ public class GoldBranchHandler : MonoBehaviour, IDialogueBranchHandler
     {
         foreach (var choice in choices)
         {
-            // ƒGƒfƒBƒ^‚ÅuGoldv‚ÆÝ’è‚³‚ê‚½‘I‘ðŽˆ‚Ì”»’èˆ—
             if (choice.conditionKey == "Gold")
             {
-                // ƒGƒfƒBƒ^‚Å“ü—Í‚µ‚½”’l(conditionValue)‚ð’¼Úƒ`ƒFƒbƒN
-                if (playerGold >= choice.conditionValue)
+                bool isConditionMet = false;
+
+                // ðŸ‘‡ è¿½åŠ : æ¼”ç®—å­ã«ã‚ˆã‚‹åˆ¤å®š
+                switch (choice.conditionOperator)
                 {
-                    Debug.Log($"[GoldBranch] ŠŽ‹àƒNƒŠƒA ({playerGold} >= {choice.conditionValue})");
+                    case ConditionOperator.Equal:
+                        isConditionMet = playerGold == choice.conditionValue;
+                        break;
+                    case ConditionOperator.Greater:
+                        isConditionMet = playerGold > choice.conditionValue;
+                        break;
+                    case ConditionOperator.Less:
+                        isConditionMet = playerGold < choice.conditionValue;
+                        break;
+                    case ConditionOperator.GreaterOrEqual:
+                        isConditionMet = playerGold >= choice.conditionValue;
+                        break;
+                    case ConditionOperator.LessOrEqual:
+                        isConditionMet = playerGold <= choice.conditionValue;
+                        break;
+                }
+
+                if (isConditionMet)
+                {
+                    Debug.Log($"[GoldBranch] æ‰€æŒé‡‘ã‚¯ãƒªã‚¢");
                     onBranchDecided?.Invoke(choice.targetNodeID);
-                    return true; // •ªŠòŽÀs
+                    return true;
                 }
             }
         }
-
-        return false; // ðŒ‚ð–ž‚½‚³‚È‚¢ê‡‚ÍŽŸ‚Ìƒnƒ“ƒhƒ‰[i’Êí‘I‘ðŽˆ•\Ž¦‚È‚Çj‚Ö
+        return false;
     }
 }

@@ -4,6 +4,15 @@ using UnityEngine;
 
 namespace Runtime.Dialogue.Core
 {
+    public enum ConditionOperator
+    {
+        GreaterOrEqual, // >=
+        LessOrEqual,    // <=
+        Equal,          // ==
+        Greater,        // >
+        Less            // <
+    }
+
     [Serializable]
     public class DialogueNode
     {
@@ -11,7 +20,7 @@ namespace Runtime.Dialogue.Core
         public string nextNodeID;
 
         public string nodeID;
-        public string speakerName; // 話者名
+        public string speakerName;
         public string dialogueText;
         public List<ChoiceData> choices = new List<ChoiceData>();
     }
@@ -21,10 +30,11 @@ namespace Runtime.Dialogue.Core
     {
         public string choiceText;
         public string targetNodeID;
-        public BranchType branchType;
 
-        // 分岐設定用データ
+        public string branchType = "DefaultChoice";
+
         public string conditionKey = "";
+        public ConditionOperator conditionOperator = ConditionOperator.GreaterOrEqual;
         public int conditionValue = 0;
     }
 
@@ -32,6 +42,7 @@ namespace Runtime.Dialogue.Core
     {
         DefaultChoice,
         AutoBranch,
-        SpecialUI
+        SpecialUI,
+        CustomUI
     }
 }

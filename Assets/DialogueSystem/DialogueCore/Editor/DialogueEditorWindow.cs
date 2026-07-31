@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using Runtime.Dialogue.Core;
 using System.Linq;
+using Runtime.Dialogue;
 
 namespace DialogueSystem.Editor
 {
@@ -198,6 +199,29 @@ namespace DialogueSystem.Editor
             })
             { text = "Save" };
             toolbar.Add(saveButton);
+
+            var eventInfoButton = new Button(() =>
+            {
+                // TypeCacheを使用して、インターフェースを実装しているクラスを高速に検索
+                var cmdTypes = TypeCache.GetTypesDerivedFrom<IDialogueCommandHandler>();
+                var branchTypes = TypeCache.GetTypesDerivedFrom<Runtime.Dialogue.Branching.IDialogueBranchHandler>();
+
+                string msg = "【登録済みの演出コマンド】\n";
+                foreach (var t in cmdTypes)
+                {
+                    if (!t.IsAbstract && !t.IsInterface) msg += $"・{t.Name}\n";
+                }
+
+                msg += "\n【登録済みの分岐ハンドラー】\n";
+                foreach (var t in branchTypes)
+                {
+                    if (!t.IsAbstract && !t.IsInterface) msg += $"・{t.Name}\n";
+                }
+
+                EditorUtility.DisplayDialog("使用できるイベント一覧", msg, "OK");
+            })
+            { text = "Events Info" };
+            toolbar.Add(eventInfoButton);
 
 
             // ステータスラベル（右端）

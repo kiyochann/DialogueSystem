@@ -20,7 +20,7 @@ namespace DialoguePlugins.Branching
             foreach (var choice in choices)
             {
                 // エディタ側で設定された BranchType が AutoBranch のものを探す
-                if (choice.branchType == BranchType.AutoBranch)
+                if (choice.branchType == "AutoBranch")
                 {
                     // 必要に応じてここで条件判定（例: 所持金チェックなど）を入れる
                     Debug.Log($"[AutoBranchHandler] 自動分岐を実行: {choice.choiceText}");
