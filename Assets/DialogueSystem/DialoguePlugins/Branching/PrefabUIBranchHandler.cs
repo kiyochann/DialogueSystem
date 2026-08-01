@@ -28,8 +28,8 @@ namespace Runtime.Dialogue.Branching
         {
             if (choices == null || choices.Count == 0) return false;
 
-            // 👈 目標1: ここで「CustomUI」の時だけ処理するようにフィルタリング
-            if (choices[0].branchType != BranchType.CustomUI.ToString()) return false;
+            // 👈 修正: 自身のクラス名とエディタで選ばれた名前が一致するか判定
+            if (choices[0].branchType != this.GetType().Name) return false;
 
             if (branchUIPrefab == null)
             {
@@ -37,7 +37,6 @@ namespace Runtime.Dialogue.Branching
                 return false;
             }
 
-            // --- (以降の Instantiate やボタンのセットアップ処理は前回と全く同じなので省略) ---
             currentUIInstance = uiParent != null ? Instantiate(branchUIPrefab, uiParent) : Instantiate(branchUIPrefab);
             Button[] availableButtons = currentUIInstance.GetComponentsInChildren<Button>(true);
             int processCount = Mathf.Min(choices.Count, availableButtons.Length);
