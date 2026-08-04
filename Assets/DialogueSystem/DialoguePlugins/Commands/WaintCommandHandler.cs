@@ -1,3 +1,4 @@
+using Runtime.Dialogue.Core;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -7,6 +8,7 @@ namespace Runtime.Dialogue.Commands
     /// <summary>
     /// [wait:time=秒数] 指定した秒数だけ文字送りを一時停止させるプラグイン
     /// </summary>
+    [HandlerInfo(description: "指定した秒数だけ会話の進行（文字送り）を一時停止します。", usage: "[wait:time=1.0]")]
     public class WaitCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "wait";

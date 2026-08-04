@@ -4,6 +4,7 @@ using UnityEngine;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Branching;
 
+[HandlerInfo(description: "プレイヤーの所持金が設定した条件を満たしているか判定し、満たしている場合に自動で分岐します。", usage: "ノードエディタ上で、選択肢のConditionKeyに「Gold」を指定し、ConditionOperator（比較条件）と判定する金額（ConditionValue）を設定してください。")]
 public class GoldBranchHandler : MonoBehaviour, IDialogueBranchHandler
 {
     public int Priority => 80;

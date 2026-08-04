@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Runtime.Dialogue.Core;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; // 👈 追加
@@ -8,6 +9,7 @@ namespace Runtime.Dialogue.Commands
     /// <summary>
     /// [fade_in] コマンドを処理するプラグイン
     /// </summary>
+    [HandlerInfo(description: "画面を暗転状態から徐々に明るくするフェードイン演出を行います。", usage: "[fade_in:time=1.0]")]
     public class FadeInCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "fade_in";

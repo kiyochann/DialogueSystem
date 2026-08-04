@@ -1,11 +1,15 @@
-﻿using System;
+﻿using Runtime.Dialogue.Core;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; // 👈 追加
 
 namespace Runtime.Dialogue.Commands
 {
-
+    /// <summary>
+    /// [fade_out] コマンドを処理するプラグイン
+    /// </summary>
+    [HandlerInfo(description: "画面を徐々に暗転させるフェードアウト演出を行います。", usage: "[fade_out:time=1.0]")]
     public class FadeOutCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "fade_out";
@@ -77,5 +81,4 @@ namespace Runtime.Dialogue.Commands
             onComplete?.Invoke();
         }
     }
-
 }

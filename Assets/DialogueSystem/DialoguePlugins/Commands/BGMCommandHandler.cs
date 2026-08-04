@@ -7,7 +7,7 @@ namespace Runtime.Dialogue.Commands
     /// <summary>
     /// [bgm:clip=曲名] を処理する後付けスクリプト
     /// </summary>
-    [HandlerInfo("BGMを再生・変更します。", "使い方: [bgm:name=BGMの名前]")]
+    [HandlerInfo(description: "BGMを再生または変更します。", usage: "[bgm:clip=BGMの名前]")]
     public class BGMCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         // 1. 担当するコマンド名を宣言

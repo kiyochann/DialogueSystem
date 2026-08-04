@@ -7,6 +7,7 @@ using Runtime.Dialogue.Branching;
 
 namespace Runtime.Dialogue.Branching
 {
+    [HandlerInfo(description: "事前に設定した独自のUIプレハブを生成して、カスタムデザインの選択肢画面を表示します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「PrefabUIBranchHandler」を指定してください。また、Inspectorから『Branch UI Prefab』にボタンを含むプレハブを割り当てる必要があります。")]
     public class PrefabUIBranchHandler : MonoBehaviour, IDialogueBranchHandler
     {
         [Header("UI Settings")]

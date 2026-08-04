@@ -4,6 +4,7 @@ using UnityEngine;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Branching;
 
+[HandlerInfo(description: "プレイヤーが特定のアイテムを所持しているか判定し、所持している場合は自動的に該当するノードへ分岐します。", usage: "ノードエディタ上で、選択肢のテキスト（Choice Text）の先頭に「[ItemCheck]」と入力してください。")]
 public class InventoryBranchHandler : MonoBehaviour, IDialogueBranchHandler
 {
     // DefaultChoiceHandler(0)より高く、緊急割り込みより低い優先度

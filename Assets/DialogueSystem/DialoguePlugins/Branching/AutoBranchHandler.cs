@@ -5,6 +5,7 @@ using Runtime.Dialogue.Core;
 
 namespace DialoguePlugins.Branching
 {
+    [HandlerInfo(description: "プレイヤーの入力を待たずに、自動的に指定されたノードへ分岐します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「AutoBranch」を指定してください。")]
     public class AutoBranchHandler : MonoBehaviour, Runtime.Dialogue.Branching.IDialogueBranchHandler
     {
         public int Priority => 100; // 優先度を高く設定（通常ボタンより先に判定させる）

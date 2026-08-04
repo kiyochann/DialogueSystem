@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Runtime.Dialogue.Core;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Runtime.Dialogue.Commands
 {
+    [HandlerInfo(description: "指定された名前のSE（効果音）を再生します。", usage: "[se:clip=SEの名前]")]
     [RequireComponent(typeof(AudioSource))]
     public class SECommandHandler : MonoBehaviour, IDialogueCommandHandler
     {

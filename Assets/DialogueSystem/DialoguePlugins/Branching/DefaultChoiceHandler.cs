@@ -7,6 +7,7 @@ using Runtime.Dialogue.Logic;
 
 namespace Runtime.Dialogue.Branching
 {
+    [HandlerInfo(description: "プレイヤーが画面上のボタンをクリックして選択する、標準的な選択肢を表示します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「DefaultChoice」を指定してください。")]
     public class DefaultChoiceHandler : MonoBehaviour, IDialogueBranchHandler
     {
         public int Priority => 0; // 最低優先度（フォールバック用）

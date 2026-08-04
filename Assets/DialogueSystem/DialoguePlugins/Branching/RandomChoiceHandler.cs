@@ -7,6 +7,7 @@ using Runtime.Dialogue.Branching;
 namespace Runtime.Dialogue.Branching
 {
     // 💡 クラス名を変更するだけで、Editorのドロップダウンに「RandomChoiceHandler」が自動追加されます
+    [HandlerInfo(description: "設定された複数の選択肢の中からランダムで1つを自動的に選び、該当するノードへ分岐します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「RandomChoiceHandler」を指定してください。")]
     public class RandomChoiceHandler : MonoBehaviour, IDialogueBranchHandler
     {
         public int Priority => 50;
@@ -19,7 +20,7 @@ namespace Runtime.Dialogue.Branching
             }
         }
 
-        
+
         public bool TryHandleBranch(List<ChoiceData> choices, Action<string> onBranchDecided)
         {
             if (choices == null || choices.Count == 0) return false;
