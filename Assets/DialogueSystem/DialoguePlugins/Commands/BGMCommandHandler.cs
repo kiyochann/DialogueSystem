@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Runtime.Dialogue.Core;
+using System;
 using UnityEngine;
 
 namespace Runtime.Dialogue.Commands
@@ -6,6 +7,7 @@ namespace Runtime.Dialogue.Commands
     /// <summary>
     /// [bgm:clip=曲名] を処理する後付けスクリプト
     /// </summary>
+    [HandlerInfo("BGMを再生・変更します。", "使い方: [bgm:name=BGMの名前]")]
     public class BGMCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         // 1. 担当するコマンド名を宣言

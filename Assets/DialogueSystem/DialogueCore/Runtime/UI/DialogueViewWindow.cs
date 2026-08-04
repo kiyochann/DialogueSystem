@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Logic;
 using System.Linq;
+using System.Reflection;
 
 namespace Runtime.Dialogue
 {

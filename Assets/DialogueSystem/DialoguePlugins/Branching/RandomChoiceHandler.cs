@@ -35,7 +35,7 @@ namespace Runtime.Dialogue.Branching
             int randomIndex = UnityEngine.Random.Range(0, choices.Count);
             ChoiceData selectedChoice = choices[randomIndex];
 
-            Debug.Log($"[RandomChoice] 運命のダイスロール！ {choices.Count}つの選択肢から '{selectedChoice.choiceText}' が選ばれました。");
+            Debug.Log($"[RandomChoice] {choices.Count}つの選択肢から '{selectedChoice.choiceText}' が選ばれました。");
 
             // 選ばれた選択肢の遷移先ノードへ進む
             onBranchDecided?.Invoke(selectedChoice.targetNodeID);

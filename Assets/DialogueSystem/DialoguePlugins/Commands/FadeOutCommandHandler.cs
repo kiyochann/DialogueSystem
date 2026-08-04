@@ -5,6 +5,7 @@ using UnityEngine.UI; // 👈 追加
 
 namespace Runtime.Dialogue.Commands
 {
+
     public class FadeOutCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "fade_out";
@@ -76,4 +77,5 @@ namespace Runtime.Dialogue.Commands
             onComplete?.Invoke();
         }
     }
+
 }
