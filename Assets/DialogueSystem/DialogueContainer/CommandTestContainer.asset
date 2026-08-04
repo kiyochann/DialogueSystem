@@ -18,7 +18,7 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_60c34
     speakerName: 
-    dialogueText: '[fade_out:time=1.0]'
+    dialogueText: 
     choices:
     - choiceText: New Choice
       targetNodeID: Node_e15cc
@@ -36,7 +36,7 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_6c183
     speakerName: 
-    dialogueText: 
+    dialogueText: '[speed:val=1]ssssssssssssssssssssssssssssssss'
     choices:
     - choiceText: New Choice
       targetNodeID: Node_92822
