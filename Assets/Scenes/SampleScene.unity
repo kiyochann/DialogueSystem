@@ -165,7 +165,6 @@ GameObject:
   - component: {fileID: 160697850}
   - component: {fileID: 160697849}
   - component: {fileID: 160697853}
-  - component: {fileID: 160697854}
   m_Layer: 0
   m_Name: DialogueSysem
   m_TagString: Untagged
@@ -239,18 +238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5268e839fae0d7f499bddc18909c4810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Branching.DialogueBranchDispatcher
---- !u!114 &160697854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 160697848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21f1f282ca5132f48ac9123648c07204, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.Plugins.Commands.TextSpeedCommandHandler
 --- !u!1 &233681580
 GameObject:
   m_ObjectHideFlags: 0
@@ -1239,6 +1226,7 @@ GameObject:
   - component: {fileID: 1403992723}
   - component: {fileID: 1403992722}
   - component: {fileID: 1403992721}
+  - component: {fileID: 1403992724}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -1307,6 +1295,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1403992724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1403992720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe37735e7c33700418a0c88fd5baa1f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TextSpeedCommandHandler
 --- !u!1 &1722828172
 GameObject:
   m_ObjectHideFlags: 0

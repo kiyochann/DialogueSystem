@@ -36,7 +36,7 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_6c183
     speakerName: 
-    dialogueText: '[speed:val=1]ssssssssssssssssssssssssssssssss'
+    dialogueText: '[speed:value=121]ssssssssssssssssssssssssssssssss'
     choices:
     - choiceText: New Choice
       targetNodeID: Node_92822
