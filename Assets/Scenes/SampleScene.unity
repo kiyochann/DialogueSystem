@@ -592,6 +592,7 @@ GameObject:
   - component: {fileID: 417909671}
   - component: {fileID: 417909670}
   - component: {fileID: 417909669}
+  - component: {fileID: 417909675}
   m_Layer: 0
   m_Name: CommandHandlers
   m_TagString: Untagged
@@ -776,6 +777,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55325bea824588c4998a71dc97fe7345, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.BGMCommandHandler
+--- !u!114 &417909675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417909667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe37735e7c33700418a0c88fd5baa1f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.SpeedCommandHandler
 --- !u!1 &685952808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,6 +1603,7 @@ MonoBehaviour:
   choiceButtonParent: {fileID: 1085741772}
   choiceButtonPrefab: {fileID: 287873248718608711, guid: 74780f2f7ab01ff4996581e992de564e, type: 3}
   typingSpeed: 0.05
+  defaultFont: {fileID: 0}
 --- !u!114 &1905074243
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,40 +20,40 @@ namespace Runtime.Dialogue
         public static void ParseText(string rawText, out string cleanText, out List<DialogueCommand> commands)
         {
             commands = new List<DialogueCommand>();
+            cleanText = string.Empty;
+            if (string.IsNullOrEmpty(rawText)) return;
 
-            if (string.IsNullOrEmpty(rawText))
+            // [コマンド] または <TMPタグ> を両方検知
+            Regex combinedRegex = new Regex(@"\[([^\]\s:<]+)(?::([^\]<]+))?\]|<[^>]+>");
+
+            int lastIndex = 0;
+            int visibleCharCount = 0;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            foreach (Match match in combinedRegex.Matches(rawText))
             {
-                cleanText = string.Empty;
-                return;
+                string textBefore = rawText.Substring(lastIndex, match.Index - lastIndex);
+                sb.Append(textBefore);
+
+                // 絵文字(サロゲートペア)のズレを防ぐため StringInfo を使用
+                visibleCharCount += new System.Globalization.StringInfo(textBefore).LengthInTextElements;
+
+                if (match.Value.StartsWith("<"))
+                {
+                    // TMPタグは表示用テキストに残す（カウントは増やさない）
+                    sb.Append(match.Value);
+                }
+                else
+                {
+                    // 独自コマンドの場合はリストに追加し、テキストからは消去
+                    string cmdName = match.Groups[1].Value;
+                    string paramStr = match.Groups[2].Value;
+                    commands.Add(new DialogueCommand(cmdName, ParseArguments(paramStr), visibleCharCount));
+                }
+                lastIndex = match.Index + match.Length;
             }
-
-            // 正規表現のマッチング結果を一通り取得
-            MatchCollection matches = TagRegex.Matches(rawText);
-
-            int charOffset = 0; // タグを消去したことによってずれる文字列の累積
-            cleanText = rawText;
-
-            foreach (Match match in matches)
-            {
-                string cmdName = match.Groups[1].Value;
-                string paramStr = match.Groups[2].Value;
-
-                // パラメータ文字列(例:"time=1.5,type=out"を分解して辞書にする)
-                var argsDict = ParseArguments(paramStr);
-
-                // タグが「表示文字列の何文字目」に位置するかを計算
-                int characterIndex = match.Index - charOffset;
-
-                // 共通形式のコマンドオブジェクトを生成してリストへ追加
-                DialogueCommand cmd = new DialogueCommand(cmdName, argsDict, characterIndex);
-                commands.Add(cmd);
-
-                // 文字列からタグの部分を消去する
-                cleanText = cleanText.Remove(match.Index - charOffset, match.Length);
-
-                // 消去したタグの長さ分、以降の文字列インデックスを前にずらす
-                charOffset += match.Length;
-            }
+            sb.Append(rawText.Substring(lastIndex));
+            cleanText = sb.ToString();
         }
 
         /// <summary>

@@ -102,48 +102,36 @@ namespace Runtime.Dialogue
         /// </summary>
         private IEnumerator TypeTextRoutine()
         {
-            if (bodyText != null) bodyText.text = string.Empty;
-            int charCount = 0;
+            bodyText.text = currentFullText;
+            bodyText.maxVisibleCharacters = 0;
+            bodyText.ForceMeshUpdate(); // テキスト解析を強制し、正確な文字数を取得
 
-            while (charCount < currentFullText.Length)
+            int totalVisibleChars = bodyText.textInfo.characterCount;
+            int currentVisibleIndex = 0;
+
+            while (currentVisibleIndex < totalVisibleChars)
             {
-                int pendingCommands = 0; // 👈 追加: 完了待ちコマンドのカウンター
-
+                int pendingCommands = 0;
                 if (currentCommands != null)
                 {
                     foreach (var cmd in currentCommands)
                     {
-                        if (cmd != null && !cmd.IsExecuted && cmd.CharacterIndex == charCount)
+                        if (cmd != null && !cmd.IsExecuted && cmd.CharacterIndex == currentVisibleIndex)
                         {
-                            pendingCommands++; // コマンド実行前にカウントアップ
-
+                            pendingCommands++;
                             if (DialogueEventDispatcher.Instance != null)
-                            {
-                                // 👈 修正: コールバックを受け取り、完了時にカウントを下げる
-                                DialogueEventDispatcher.Instance.ExecuteCommand(cmd, () => {
-                                    pendingCommands--;
-                                });
-                            }
+                                DialogueEventDispatcher.Instance.ExecuteCommand(cmd, () => pendingCommands--);
                             else
-                            {
                                 pendingCommands--;
-                            }
                         }
                     }
                 }
 
-                // 👈 追加: 発火した演出が全て完了するまで文字送りを一時停止
-                if (pendingCommands > 0)
-                {
-                    yield return new WaitUntil(() => pendingCommands <= 0);
-                }
+                if (pendingCommands > 0) yield return new WaitUntil(() => pendingCommands <= 0);
 
-                if (bodyText != null)
-                {
-                    bodyText.text += currentFullText[charCount];
-                }
+                currentVisibleIndex++;
+                bodyText.maxVisibleCharacters = currentVisibleIndex;
 
-                ++charCount;
                 yield return new WaitForSeconds(typingSpeed);
             }
 
@@ -154,12 +142,16 @@ namespace Runtime.Dialogue
 
         public void ForceCompleteTyping()
         {
-            if (typingCoroutine == null) return;
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+                typingCoroutine = null;
+            }
 
-            StopCoroutine(typingCoroutine);
-            typingCoroutine = null;
-
-            if (bodyText != null) bodyText.text = currentFullText;
+            if (bodyText != null)
+            {
+                bodyText.maxVisibleCharacters = 99999; // 全て表示
+            }
 
             ExecuteRemainingCommands(true);
             onCompleteCallback?.Invoke();
@@ -204,6 +196,7 @@ namespace Runtime.Dialogue
             }
         }
 
+
         public void HideChoices()
         {
             foreach (var btn in activeButtons)
@@ -212,5 +205,33 @@ namespace Runtime.Dialogue
             }
             activeButtons.Clear();
         }
+
+        [Header("Fonts")]
+        [SerializeField] private TMPro.TMP_FontAsset defaultFont; // 通常のフォント
+
+        // DialogueViewWindow.cs に追加
+
+        // タイピング速度を動的に変更する
+       
+
+        // セリフ開始時に標準状態へリセット（ResetStyleを拡張）
+        public void ResetStyle()
+        {
+            if (bodyText != null)
+            {
+                if (defaultFont != null) bodyText.font = defaultFont;
+                bodyText.color = Color.white;
+                bodyText.fontSize = 36; // デフォルトサイズ例
+            }
+            typingSpeed = 0.05f; // デフォルト速度に戻す
+        }
+
+        public void SetTypingSpeed(float newSpeed)
+        {
+            typingSpeed = Mathf.Max(0.001f, newSpeed);
+        }
+
+
+
     }
 }
