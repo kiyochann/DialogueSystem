@@ -26,6 +26,9 @@ namespace Runtime.Dialogue
         [Header("Settings")]
         [SerializeField] private float typingSpeed = 0.05f;      // 文字の表示速度(秒)
 
+        [Header("Fonts")]
+        [SerializeField] private TMP_FontAsset defaultFont;      // 初期状態で使用するデフォルトフォント
+
         private Coroutine typingCoroutine;
         private string currentFullText;
         private List<DialogueCommand> currentCommands;
@@ -80,7 +83,6 @@ namespace Runtime.Dialogue
         /// </summary>
         public void DisplaySentence(string speakerID, string cleanText, List<DialogueCommand> commands, Action onTypingComplete)
         {
-            // 👇 必ず最初にビューを初期化（ウィンドウとテキストを有効化）する
             InitializeView();
 
             if (nameText != null) nameText.text = speakerID;
@@ -104,7 +106,7 @@ namespace Runtime.Dialogue
         {
             bodyText.text = currentFullText;
             bodyText.maxVisibleCharacters = 0;
-            bodyText.ForceMeshUpdate(); // テキスト解析を強制し、正確な文字数を取得
+            bodyText.ForceMeshUpdate();
 
             int totalVisibleChars = bodyText.textInfo.characterCount;
             int currentVisibleIndex = 0;
@@ -150,7 +152,7 @@ namespace Runtime.Dialogue
 
             if (bodyText != null)
             {
-                bodyText.maxVisibleCharacters = 99999; // 全て表示
+                bodyText.maxVisibleCharacters = 99999;
             }
 
             ExecuteRemainingCommands(true);
@@ -176,16 +178,13 @@ namespace Runtime.Dialogue
             }
         }
 
-        /// <summary>
-        /// 選択肢ボタンを動的に生成して画面に提示
-        /// </summary>
         public void ShowChoices(List<ChoiceData> choices, Action<int> onChoiceSelected)
         {
-            HideChoices(); // 古いボタンの削除
+            HideChoices();
 
             for (int i = 0; i < choices.Count; ++i)
             {
-                int index = i; // クロージャ対策
+                int index = i;
                 Button btn = Instantiate(choiceButtonPrefab, choiceButtonParent);
 
                 var btnText = btn.GetComponentInChildren<TextMeshProUGUI>();
@@ -196,7 +195,6 @@ namespace Runtime.Dialogue
             }
         }
 
-
         public void HideChoices()
         {
             foreach (var btn in activeButtons)
@@ -206,32 +204,11 @@ namespace Runtime.Dialogue
             activeButtons.Clear();
         }
 
-        [Header("Fonts")]
-        [SerializeField] private TMPro.TMP_FontAsset defaultFont; // 通常のフォント
-
-        // DialogueViewWindow.cs に追加
-
-        // タイピング速度を動的に変更する
        
-
-        // セリフ開始時に標準状態へリセット（ResetStyleを拡張）
-        public void ResetStyle()
-        {
-            if (bodyText != null)
-            {
-                if (defaultFont != null) bodyText.font = defaultFont;
-                bodyText.color = Color.white;
-                bodyText.fontSize = 36; // デフォルトサイズ例
-            }
-            typingSpeed = 0.05f; // デフォルト速度に戻す
-        }
 
         public void SetTypingSpeed(float newSpeed)
         {
             typingSpeed = Mathf.Max(0.001f, newSpeed);
         }
-
-
-
     }
 }

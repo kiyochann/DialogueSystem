@@ -25,7 +25,7 @@ namespace DialogueSystem.Editor
 
         //private bool debugGraphVisible = true;
 
-        [MenuItem("Tools/Dialogue Editor")]
+        [MenuItem("Tools/Dialogue/Dialogue Editor")]
         public static void OpenDialogueEditor()
         {
             var window = GetWindow<DialogueEditorWindow>("Dialogue Editor");

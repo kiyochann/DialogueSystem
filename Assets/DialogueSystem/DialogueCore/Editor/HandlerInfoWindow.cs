@@ -1,89 +1,223 @@
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-
 using Runtime.Dialogue;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Branching;
 
 namespace DialogueSystem.Editor
 {
+    /// <summary>
+    /// 独自コマンド、分岐ハンドラー、TMPリッチテキストの使用例と説明を表示するエディタウィンドウ
+    /// </summary>
     public class HandlerInfoWindow : EditorWindow
     {
+        private int selectedTab = 0;
+        private readonly string[] tabTitles = { "独自コマンド [ ]", "分岐ハンドラー", "リッチテキスト < >" };
         private Vector2 scrollPosition;
 
-        // �E�B���h�E���J������
+        private struct HandlerData
+        {
+            public string Name;
+            public string Description;
+            public string Usage;
+        }
+
+        private List<HandlerData> commandInfoList = new List<HandlerData>();
+        private List<HandlerData> branchInfoList = new List<HandlerData>();
+
+        [MenuItem("Tools/Dialogue/Handler Info Window")]
         public static void ShowWindow()
         {
-            var window = GetWindow<HandlerInfoWindow>("Handler Info");
-            window.minSize = new Vector2(300, 400);
-            window.Show();
+            var window = GetWindow<HandlerInfoWindow>("Dialogue Reference");
+            window.minSize = new Vector2(500, 400);
+            window.RefreshHandlers();
+        }
+
+        private void OnEnable()
+        {
+            RefreshHandlers();
+        }
+
+        /// <summary>
+        /// [HandlerInfo] 属性が付与されたクラスを自動収集する
+        /// </summary>
+        public void RefreshHandlers()
+        {
+            commandInfoList.Clear();
+            branchInfoList.Clear();
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
+            {
+                Type[] types;
+                try { types = assembly.GetTypes(); }
+                catch { continue; }
+
+                foreach (var type in types)
+                {
+                    if (type.IsAbstract || type.IsInterface) continue;
+
+                    var attr = type.GetCustomAttribute<HandlerInfoAttribute>();
+                    if (attr == null) continue;
+
+                    // コマンドハンドラー (IDialogueCommandHandler) の検出
+                    if (typeof(IDialogueCommandHandler).IsAssignableFrom(type))
+                    {
+                        string cmdName = type.Name;
+
+                        // 👇 MonoBehaviour などの Unityオブジェクト出ない場合のみインスタンス化を試みる
+                        if (!typeof(UnityEngine.Object).IsAssignableFrom(type))
+                        {
+                            try
+                            {
+                                var instance = Activator.CreateInstance(type) as IDialogueCommandHandler;
+                                if (instance != null && !string.IsNullOrEmpty(instance.TargetCommandName))
+                                {
+                                    cmdName = instance.TargetCommandName;
+                                }
+                            }
+                            catch { }
+                        }
+
+                        commandInfoList.Add(new HandlerData
+                        {
+                            Name = cmdName,
+                            Description = attr.Description,
+                            Usage = attr.Usage
+                        });
+                    }
+                    // 分岐ハンドラー (IDialogueBranchHandler) の検出
+                    else if (typeof(IDialogueBranchHandler).IsAssignableFrom(type))
+                    {
+                        branchInfoList.Add(new HandlerData
+                        {
+                            Name = type.Name,
+                            Description = attr.Description,
+                            Usage = attr.Usage
+                        });
+                    }
+                }
+            }
         }
 
         private void OnGUI()
         {
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+            GUILayout.Space(10);
 
-            // �R�}���h�i���o�j�ꗗ
-            EditorGUILayout.LabelField("�y ���o�R�}���h �z", EditorStyles.boldLabel);
-            DrawHandlerList<IDialogueCommandHandler>();
+            EditorGUILayout.BeginHorizontal();
+            selectedTab = GUILayout.Toolbar(selectedTab, tabTitles, GUILayout.Height(25));
+            if (GUILayout.Button("更新", GUILayout.Width(60), GUILayout.Height(25)))
+            {
+                RefreshHandlers();
+            }
+            EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.Space(15);
+            GUILayout.Space(10);
+            scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
-            // ����ꗗ
-            EditorGUILayout.LabelField("�y ����n���h���[ �z", EditorStyles.boldLabel);
-            DrawHandlerList<IDialogueBranchHandler>();
+            switch (selectedTab)
+            {
+                case 0:
+                    DrawInfoList("登録済み独自コマンド [ ] 一覧", commandInfoList);
+                    break;
+                case 1:
+                    DrawInfoList("登録済み分岐ハンドラー 一覧", branchInfoList);
+                    break;
+                case 2:
+                    DrawRichTextInfo();
+                    break;
+            }
 
-            EditorGUILayout.EndScrollView();
+            GUILayout.EndScrollView();
         }
 
-        // �w�肵���C���^�[�t�F�[�X���p������N���X�����X�g�����ĕ`��
-        private void DrawHandlerList<T>()
+        private void DrawInfoList(string headerTitle, List<HandlerData> list)
         {
-            var types = TypeCache.GetTypesDerivedFrom<T>();
-            bool hasAny = false;
+            EditorGUILayout.LabelField(headerTitle, EditorStyles.boldLabel);
+            GUILayout.Space(5);
 
-            foreach (var t in types)
+            if (list.Count == 0)
             {
-                if (t.IsAbstract || t.IsInterface) continue;
-                hasAny = true;
+                EditorGUILayout.HelpBox("[HandlerInfo] 属性が付与された対象クラスが見つかりません。", MessageType.Info);
+                return;
+            }
 
-                // [HandlerInfo] �������擾
-                var attr = t.GetCustomAttribute<HandlerInfoAttribute>();
+            foreach (var item in list)
+            {
+                DrawCardItem(item.Name, item.Usage, item.Description);
+            }
+        }
 
+        /// <summary>
+        /// タブ3: TextMeshPro標準リッチテキストの説明欄
+        /// </summary>
+        private void DrawRichTextInfo()
+        {
+            EditorGUILayout.HelpBox(
+                "テキスト内に直接記述することで、文字の装飾やフォント変更が可能です。\n" +
+                "TextMeshProの標準機能のため、タイピング演出の文字数カウントに影響を与えません。",
+                MessageType.Info);
+
+            GUILayout.Space(10);
+
+            DrawCardItem(
+                "フォント変更",
+                "<font=\"フォント名\">ここだけ変更</font>",
+                "指定したフォントに変更します。\n※対象のフォントアセットは必ず「Resources/Fonts & Materials/」直下に配置してください。"
+            );
+
+            DrawCardItem(
+                "文字色変更",
+                "<color=red>赤色</color> または <color=#FF0000>赤色</color>",
+                "文字の色を変更します。英語の色名か16進数のカラーコードが使用可能です。"
+            );
+
+            DrawCardItem(
+                "文字サイズ変更",
+                "<size=150%>大きく</size> または <size=40>40px</size>",
+                "文字のサイズを変更します。パーセント指定、またはピクセル直接指定が可能です。"
+            );
+
+            DrawCardItem(
+                "太字 / 斜体",
+                "<b>太字</b> / <i>斜体</i>",
+                "文字を太字（Bold）、または斜体（Italic）にします。"
+            );
+
+            DrawCardItem(
+                "縦位置調整 (ルビ等)",
+                "<voffset=1em><size=50%>ふりがな</size></voffset>",
+                "文字の縦位置（voffset）とサイズを組み合わせて、疑似的にルビなどを振る際に使用します。"
+            );
+        }
+
+        private void DrawCardItem(string title, string usage, string description)
+        {
+            EditorGUILayout.BeginVertical("box");
+
+            EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
+
+            if (!string.IsNullOrEmpty(usage))
+            {
                 EditorGUILayout.BeginHorizontal();
-
-                // Handler�̖��O�i�N���X���j��\��
-                EditorGUILayout.LabelField($"�E {t.Name}", GUILayout.Width(200));
-
-                // ����(attr)�����݂���ꍇ�̂݁u�ڍׁv�{�^����\������
-                if (attr != null)
-                {
-                    if (GUILayout.Button("�ڍ�", GUILayout.Width(50)))
-                    {
-                        // �ڍ׃{�^���������ꂽ��|�b�v�A�b�v�Ŏg������\��
-                        ShowDetailDialog(t.Name, attr);
-                    }
-                }
-
+                EditorGUILayout.PrefixLabel("使用例:");
+                EditorGUILayout.SelectableLabel(usage, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight));
                 EditorGUILayout.EndHorizontal();
             }
 
-            if (!hasAny)
+            if (!string.IsNullOrEmpty(description))
             {
-                EditorGUILayout.LabelField("  �i�o�^����Ă��܂���j");
-            }
-        }
-
-        private void ShowDetailDialog(string className, HandlerInfoAttribute attr)
-        {
-            string msg = $"�y�����z\n{attr.Description}\n\n";
-            if (!string.IsNullOrEmpty(attr.Usage))
-            {
-                msg += $"�y�g�����z\n{attr.Usage}";
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PrefixLabel("説明:");
+                EditorGUILayout.LabelField(description, EditorStyles.wordWrappedLabel);
+                EditorGUILayout.EndHorizontal();
             }
 
-            EditorUtility.DisplayDialog($"{className} �̏ڍ�", msg, "����");
+            EditorGUILayout.EndVertical();
+            GUILayout.Space(5);
         }
     }
 }

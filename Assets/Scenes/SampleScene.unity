@@ -1331,8 +1331,6 @@ GameObject:
   - component: {fileID: 1722828173}
   - component: {fileID: 1722828179}
   - component: {fileID: 1722828178}
-  - component: {fileID: 1722828177}
-  - component: {fileID: 1722828176}
   - component: {fileID: 1722828175}
   - component: {fileID: 1722828174}
   m_Layer: 0
@@ -1383,31 +1381,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Branching.PrefabUIBranchHandler
   branchUIPrefab: {fileID: 7961670325720567414, guid: 95b5cc79649d05a45afa261aebea92b9, type: 3}
   uiParent: {fileID: 685952812}
---- !u!114 &1722828176
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1722828172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b06dd3282dcdef4c92c9c42c128672a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryBranchHandler
---- !u!114 &1722828177
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1722828172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b63cf830672dfe4e85035b0ee14b39c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GoldBranchHandler
-  playerGold: 2
 --- !u!114 &1722828178
 MonoBehaviour:
   m_ObjectHideFlags: 0
