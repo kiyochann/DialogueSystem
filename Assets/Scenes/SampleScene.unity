@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f4151499d21eed48bdb658784322d6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueTesting
-  testData: {fileID: 11400000, guid: c506cc27cc8a72a44890eb3907072db7, type: 2}
+  testData: {fileID: 11400000, guid: 4c2db4fd48e30ea418156439289ef80d, type: 2}
   dialogueView: {fileID: 1905074242}
 --- !u!114 &160697850
 MonoBehaviour:
@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70598b1fe4e7e5d4ebb06f4b88a2b650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueManager
-  currentContainer: {fileID: 11400000, guid: c506cc27cc8a72a44890eb3907072db7, type: 2}
+  currentContainer: {fileID: 11400000, guid: 4c2db4fd48e30ea418156439289ef80d, type: 2}
 --- !u!4 &160697852
 Transform:
   m_ObjectHideFlags: 0
