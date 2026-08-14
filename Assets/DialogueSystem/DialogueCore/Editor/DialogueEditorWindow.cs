@@ -23,7 +23,6 @@ namespace DialogueSystem.Editor
         private Button forceSampleButton;
         private Label statusLabel;
 
-        //private bool debugGraphVisible = true;
 
         [MenuItem("Tools/Dialogue/Dialogue Editor")]
         public static void OpenDialogueEditor()
