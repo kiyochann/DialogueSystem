@@ -10,15 +10,16 @@ namespace Runtime.Dialogue.Plugins.Portraits
     [Serializable]
     public class PortraitSlot
     {
-        [Tooltip("コマンドで指定する位置（例: left, center, right）")]
+        [Tooltip("コマンドで指定する位置 例: left, center, right")]
         public string positionID;
         [Tooltip("対象となるUIのImageコンポーネント")]
         public Image portraitImage;
     }
 
-    [HandlerInfo("立ち絵を変更します", "使い方: [portrait:target=hero,exp=smile,pos=left]")]
+    [HandlerInfo(description: "指定したキャラクターの表情と表示位置を切り替えます。", usage: "[portrait:target=hero,exp=smile,pos=center]")]
     public class StandardUIPortraitHandler : MonoBehaviour, IDialogueCommandHandler
     {
+        // IDialogueCommandHandler の実装（TargetCommandName を "portrait" にする）
         public string TargetCommandName => "portrait";
 
         [Header("Character Profiles (キャラクターデータ)")]
@@ -29,63 +30,68 @@ namespace Runtime.Dialogue.Plugins.Portraits
 
         private void Start()
         {
-            // 開始時にコマンドシステムへ直接登録
+            // DialogueEventDispatcher に自分自身を「portrait」コマンドの担当として登録する
             if (DialogueEventDispatcher.Instance != null)
             {
                 DialogueEventDispatcher.Instance.RegisterHandler(this);
             }
 
-            // 初期状態では立ち絵を透明にしておく
+            // 初期状態ではすべての立ち絵を透明にしておく
             foreach (var slot in portraitSlots)
             {
-                if (slot.portraitImage != null) slot.portraitImage.color = new Color(1, 1, 1, 0);
+                if (slot.portraitImage != null)
+                {
+                    slot.portraitImage.color = new Color(1, 1, 1, 0);
+                }
             }
         }
 
+        // --- 通常時のコマンド実行 ---
         public void Execute(DialogueCommand command, Action onComplete)
         {
-            // targetが指定されていない場合は、現在話しているキャラを対象にする（★直感的な操作のための工夫）
+            // DialogueCommand の便利メソッドを使って引数を安全に取得
             string targetID = command.GetString("target", "");
-            if (string.IsNullOrEmpty(targetID) && DialogueManager.Instance != null)
-            {
-                targetID = DialogueManager.Instance.CurrentSpeaker; // ※後述のステップ3で追加します
-            }
-
-            string expression = command.GetString("exp", "normal");
+            string expression = command.GetString("exp", "default");
             string position = command.GetString("pos", "center");
 
-            ApplyPortrait(targetID, expression, position);
+            bool success = ApplyPortrait(targetID, expression, position);
+            if (!success)
+            {
+                Debug.LogWarning($"[StandardUIPortraitHandler] 立ち絵の適用に失敗しました (target:{targetID}, exp:{expression}, pos:{position})");
+            }
+
+            // 即時完了扱いにする場合はすぐに呼ぶ（フェード等を挟む場合はアニメーション終了後に呼ぶ）
             onComplete?.Invoke();
         }
 
+        // --- スキップ/早送り時の強制完了 ---
         public void ForceComplete(DialogueCommand command)
         {
-            Execute(command, null);
+            // スキップ時も一瞬で同じ処理を適用する
+            string targetID = command.GetString("target", "");
+            string expression = command.GetString("exp", "default");
+            string position = command.GetString("pos", "center");
+
+            ApplyPortrait(targetID, expression, position);
         }
 
-        private void ApplyPortrait(string targetID, string expression, string position)
+        // 実際の画像切り替え処理
+        private bool ApplyPortrait(string targetID, string expression, string position)
         {
-            // まず指定された表示位置(Slot)を探す
-            var slot = portraitSlots.Find(s => s.positionID == position);
-            if (slot == null || slot.portraitImage == null) return;
-
-            // ★追加: 表情に "clear" または "none" が指定されたら、その位置の画像を非表示にして終了する
-            if (expression.ToLower() == "clear" || expression.ToLower() == "none")
-            {
-                slot.portraitImage.gameObject.SetActive(false);
-                return;
-            }
-
-            // 通常の表示処理
             var profile = profiles.Find(p => p.characterID == targetID);
-            var sprite = profile?.GetExpression(expression);
+            if (profile == null) return false;
 
-            if (sprite != null)
-            {
-                slot.portraitImage.sprite = sprite;
-                slot.portraitImage.color = new Color(1, 1, 1, 1);
-                slot.portraitImage.gameObject.SetActive(true);
-            }
+            var sprite = profile.GetExpression(expression);
+            if (sprite == null) return false;
+
+            var slot = portraitSlots.Find(s => s.positionID == position);
+            if (slot == null || slot.portraitImage == null) return false;
+
+            slot.portraitImage.sprite = sprite;
+            slot.portraitImage.color = new Color(1, 1, 1, 1);
+            slot.portraitImage.gameObject.SetActive(true);
+
+            return true;
         }
     }
 }

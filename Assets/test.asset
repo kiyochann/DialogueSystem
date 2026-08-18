@@ -42,7 +42,7 @@ MonoBehaviour:
     nextNodeID: Node_a37a4
     nodeID: Node_d1fb3
     speakerName: aaaaa
-    dialogueText: "[layout:name=Normal][portrait:target=hero,exp=smile,pos=center]\u3053\u3093\u306B\u3061\u306F\uFF01\u79C1\u306F\u52C7\u8005\u3067\u3059\u3002\n"
+    dialogueText: "[layout:name=Normal][portrait:target=hero,exp=smile,pos=C]\u3053\u3093\u306B\u3061\u306F\uFF01\u79C1\u306F\u52C7\u8005\u3067\u3059\u3002\n"
     choices: []
   - graphPosition: {x: 1312.8, y: 253.6}
     nextNodeID: Node_f454e
@@ -60,5 +60,5 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_c06f6
     speakerName: bbb
-    dialogueText: '[portrait:pos=center,exp=clear]'
+    dialogueText: '[portrait:pos=C,exp=clear]'
     choices: []

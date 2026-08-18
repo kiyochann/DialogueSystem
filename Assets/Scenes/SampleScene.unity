@@ -150,8 +150,8 @@ Transform:
   m_Children:
   - {fileID: 417909668}
   - {fileID: 1722828173}
-  - {fileID: 1518172390}
-  - {fileID: 723411808}
+  - {fileID: 1058258980}
+  - {fileID: 496983571}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &160697848
@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 160697850}
   - component: {fileID: 160697849}
   - component: {fileID: 160697853}
+  - component: {fileID: 160697855}
   - component: {fileID: 160697854}
   m_Layer: 0
   m_Name: DialogueSysem
@@ -255,6 +256,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dcd3b2524c2b6442a13163721dccf3a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Logic.DialoguePortraitDispatcher
+--- !u!114 &160697855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 160697848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ab64d6fe5e27248af39f4ad5b0c9ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Logic.DialogueLayoutDispatcher
 --- !u!1 &203392050
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,6 +1003,72 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe37735e7c33700418a0c88fd5baa1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.SpeedCommandHandler
+--- !u!1 &496983570
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 496983571}
+  - component: {fileID: 496983572}
+  - component: {fileID: 496983573}
+  m_Layer: 0
+  m_Name: PortraitHandlers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &496983571
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496983570}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 12018223}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &496983572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496983570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96776bbc863df5d4a8e4c9716eb786df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Portraits.StandardUIPortraitHandler
+  profiles:
+  - {fileID: 11400000, guid: a93e4bc1904e7e342bb67f47525e6f30, type: 2}
+  portraitSlots:
+  - positionID: L
+    portraitImage: {fileID: 1812700138}
+  - positionID: C
+    portraitImage: {fileID: 287910304}
+  - positionID: R
+    portraitImage: {fileID: 405810693}
+--- !u!114 &496983573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 496983570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 221d97083356f1247ae02baf5649132e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PortraitCommandHandler
 --- !u!1 &685952808
 GameObject:
   m_ObjectHideFlags: 0
@@ -1094,52 +1173,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!1 &723411807
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 723411808}
-  - component: {fileID: 723411809}
-  m_Layer: 0
-  m_Name: PortraitsHandlers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &723411808
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 723411807}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 12018223}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &723411809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 723411807}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96776bbc863df5d4a8e4c9716eb786df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Portraits.StandardUIPortraitHandler
-  profiles: []
-  portraitSlots: []
 --- !u!1 &983799986
 GameObject:
   m_ObjectHideFlags: 0
@@ -1277,6 +1310,82 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 983799986}
   m_CullTransparentMesh: 1
+--- !u!1 &1058258979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1058258980}
+  - component: {fileID: 1058258981}
+  - component: {fileID: 1058258982}
+  m_Layer: 0
+  m_Name: LayoutHandlers
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1058258980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058258979}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 12018223}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1058258981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058258979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b64575c6739a9bb4aa120854bd08f5c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Layouts.StandardUIPresetLayoutHandler
+  presets:
+  - layoutName: Normal
+    showBackgroundBox: 1
+    showNameBox: 1
+    hidePortraits: 0
+    overrideTextRect: 0
+    textOffsetMin: {x: 0, y: 0}
+    textOffsetMax: {x: 0, y: 0}
+  - layoutName: Narration
+    showBackgroundBox: 1
+    showNameBox: 0
+    hidePortraits: 1
+    overrideTextRect: 0
+    textOffsetMin: {x: 0, y: 0}
+    textOffsetMax: {x: 0, y: 0}
+  backgroundBox: {fileID: 1905074240}
+  nameBox: {fileID: 1328037122}
+  textRectTransform: {fileID: 983799987}
+  portraitRoot: {fileID: 203392050}
+--- !u!114 &1058258982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1058258979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9a169f387545f741a96a2f571a6162f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LayoutCommandHandler
 --- !u!1 &1085741771
 GameObject:
   m_ObjectHideFlags: 0
@@ -1568,55 +1677,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe37735e7c33700418a0c88fd5baa1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextSpeedCommandHandler
---- !u!1 &1518172389
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1518172390}
-  - component: {fileID: 1518172391}
-  m_Layer: 0
-  m_Name: LayoutsHandlers
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1518172390
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1518172389}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 12018223}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1518172391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1518172389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b64575c6739a9bb4aa120854bd08f5c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Layouts.StandardUIPresetLayoutHandler
-  presets: []
-  backgroundBox: {fileID: 0}
-  nameBox: {fileID: 0}
-  textRectTransform: {fileID: 0}
-  portraitRoot: {fileID: 0}
 --- !u!1 &1722828172
 GameObject:
   m_ObjectHideFlags: 0

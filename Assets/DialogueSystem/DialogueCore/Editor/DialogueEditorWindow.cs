@@ -24,6 +24,7 @@ namespace DialogueSystem.Editor
         private Label statusLabel;
 
 
+
         [MenuItem("Tools/Dialogue/Dialogue Editor")]
         public static void OpenDialogueEditor()
         {
