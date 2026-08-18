@@ -12,5 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcc6dcf3673927a488b8d4f7d6fd5ffb, type: 3}
   m_Name: test
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Core.DialogueContainer
-  startNodeID: 
-  allNodes: []
+  startNodeID: Node_34dc6
+  allNodes:
+  - graphPosition: {x: 100, y: 100}
+    nextNodeID: 
+    nodeID: Node_34dc6
+    speakerName: 
+    dialogueText: senntaku
+    choices:
+    - choiceText: a
+      targetNodeID: Node_53bba
+      branchType: DefaultChoice
+      conditionKey: 
+      conditionOperator: 0
+      conditionValue: 0
+    - choiceText: b
+      targetNodeID: Node_d1fb3
+      branchType: DefaultChoice
+      conditionKey: 
+      conditionOperator: 0
+      conditionValue: 0
+  - graphPosition: {x: 644.8, y: 100}
+    nextNodeID: 
+    nodeID: Node_53bba
+    speakerName: 
+    dialogueText: a
+    choices: []
+  - graphPosition: {x: 648, y: 253.6}
+    nextNodeID: 
+    nodeID: Node_d1fb3
+    speakerName: 
+    dialogueText: b
+    choices: []

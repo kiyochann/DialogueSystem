@@ -1,6 +1,4 @@
-﻿// DialogueTesting.cs の修正
-
-using Runtime.Dialogue.Logic;
+﻿using Runtime.Dialogue.Logic;
 using Runtime.Dialogue.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,13 +28,30 @@ namespace Runtime.Dialogue
                 }
             }
 
-            // 2. 会話の進行・スキップ判定（マウス左クリック）
+            // 2. 会話の進行判定（マウス左クリック）
             if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             {
-                // アイドル状態以外（文字表示中、またはクリック待ち状態）の時に入力を受け付ける
                 if (DialogueManager.Instance.CurrentState != DialogueState.Idle)
                 {
                     DialogueManager.Instance.HandleAdvanceInput();
+                }
+            }
+
+            // 3. オート再生の切り替え判定（Aキー）
+            if (Keyboard.current != null && Keyboard.current.aKey.wasPressedThisFrame)
+            {
+                if (DialogueManager.Instance.CurrentState != DialogueState.Idle)
+                {
+                    DialogueManager.Instance.ToggleAutoMode();
+                }
+            }
+
+            // 4. スキップ再生の切り替え判定（Sキー）
+            if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
+            {
+                if (DialogueManager.Instance.CurrentState != DialogueState.Idle)
+                {
+                    DialogueManager.Instance.ToggleSkipMode();
                 }
             }
         }

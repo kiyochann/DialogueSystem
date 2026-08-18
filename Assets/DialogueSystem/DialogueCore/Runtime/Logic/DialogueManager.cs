@@ -6,12 +6,11 @@ using Runtime.Dialogue.Branching;
 
 namespace Runtime.Dialogue.Logic
 {
-    // テストコード側が参照している状態定義
     public enum DialogueState
     {
         Idle,
-        Playing,            // 文字がパラパラ表示されている最中
-        WaitingForAdvance,  // 👈 追加: 文字表示が終わり、クリックを待っている状態
+        Playing,
+        WaitingForAdvance,
         WaitingForChoice,
         Ended
     }
@@ -22,12 +21,24 @@ namespace Runtime.Dialogue.Logic
 
         [SerializeField] private DialogueContainer currentContainer;
         public IDialogueView CurrentView { get; private set; }
-
-        // テストコード側が参照している現在の状態
         public DialogueState CurrentState { get; private set; } = DialogueState.Idle;
 
         private DialogueNode currentNode;
         private Action onDialogueEndedCallback;
+
+        [Header("Auto Mode Settings")]
+        [SerializeField, Tooltip("オート再生時の基本待機時間（秒）")]
+        private float baseAutoWaitTime = 1.0f;
+        [SerializeField, Tooltip("1文字あたりの追加待機時間（秒）")]
+        private float autoWaitTimePerChar = 0.05f;
+
+        private bool isAutoMode = false;
+        public bool IsAutoMode => isAutoMode;
+        private Coroutine autoWaitCoroutine;
+
+        // 👇追加: スキップ機能用の変数
+        private bool isSkipMode = false;
+        public bool IsSkipMode => isSkipMode;
 
         private void Awake()
         {
@@ -41,14 +52,12 @@ namespace Runtime.Dialogue.Logic
             CurrentView?.InitializeView();
         }
 
-        // テストコード側から呼ばれる View 登録用メソッド
         public void RegisterView(IDialogueView view)
         {
             CurrentView = view;
             CurrentView?.InitializeView();
         }
 
-        // テストコード側からコンテナとコールバック付きで呼ばれるオーバーロード
         public void StartDialogue(DialogueContainer container, Action onEnded = null)
         {
             if (container != null)
@@ -69,7 +78,6 @@ namespace Runtime.Dialogue.Logic
             }
 
             CurrentState = DialogueState.Playing;
-
             string targetID = string.IsNullOrEmpty(startNodeID) ? currentContainer.startNodeID : startNodeID;
             currentNode = currentContainer.GetNodeByID(targetID);
 
@@ -103,6 +111,10 @@ namespace Runtime.Dialogue.Logic
                 {
                     CurrentState = DialogueState.WaitingForChoice;
 
+                    // 👇 選択肢が出た時はオート・スキップを解除して止める
+                    DisableAutoMode();
+                    DisableSkipMode();
+
                     if (DialogueBranchDispatcher.Instance != null)
                     {
                         bool handled = DialogueBranchDispatcher.Instance.TryHandleBranch(currentNode.choices, (nextID) =>
@@ -113,47 +125,70 @@ namespace Runtime.Dialogue.Logic
 
                         if (!handled)
                         {
-                            // ハンドラーの処理に失敗した場合は、進行不能を防ぐため文字送り待ちに救済
-                            Debug.LogWarning("[DialogueManager] 選択肢を処理できるハンドラーが見つかりませんでした。通常の文字送り待ちに移行します。");
                             CurrentState = DialogueState.WaitingForAdvance;
                         }
                     }
                     else
                     {
-                        // Dispatcher がない場合も、進行不能を防ぐため文字送り待ちに救済
-                        Debug.LogError("[DialogueManager] DialogueBranchDispatcher がシーンにありません！通常の文字送り待ちに移行します。");
                         CurrentState = DialogueState.WaitingForAdvance;
                     }
                 }
                 // 2. 選択肢がない場合（通常の文章）の処理
                 else
                 {
-                    // 文字表示が完了したので、プレイヤーの入力（スペースキー等）を待つ状態にする
                     CurrentState = DialogueState.WaitingForAdvance;
+
+                    // 👇 スキップ中なら即座に次へ、オート中なら待機
+                    if (isSkipMode)
+                    {
+                        StartCoroutine(SkipAdvanceRoutine());
+                    }
+                    else if (isAutoMode)
+                    {
+                        StartAutoWait(cleanText.Length);
+                    }
                 }
             });
+
+            // 👇 追加: スキップ中なら、文字表示アニメーションを即座に強制完了させる
+            if (isSkipMode && CurrentState == DialogueState.Playing)
+            {
+                CurrentView?.ForceCompleteTyping();
+            }
         }
 
-        // テストコード側からスペースキー等で呼ばれる文字送り・スキップ入力の処理
         public void HandleAdvanceInput()
         {
+            // 1. 手動入力が来たらオートとスキップを解除する
+            if (autoWaitCoroutine != null)
+            {
+                StopCoroutine(autoWaitCoroutine);
+                autoWaitCoroutine = null;
+            }
+            DisableAutoMode();
+            DisableSkipMode(); // 👈 追加
+
+            // 2. 状態に応じた進行処理
             if (CurrentState == DialogueState.Playing)
             {
-                // タイピング中なら一瞬で全文表示＆演出コマンド一括完了
                 CurrentView?.ForceCompleteTyping();
-                // ※ ForceCompleteTyping の中でコールバックが呼ばれるため、自動的に WaitingForAdvance に移行します。
             }
             else if (CurrentState == DialogueState.WaitingForAdvance)
             {
-                // クリック待ち状態なら、次のノードへ進む
-                if (!string.IsNullOrEmpty(currentNode.nextNodeID))
-                {
-                    StartDialogue(currentNode.nextNodeID);
-                }
-                else
-                {
-                    EndDialogue();
-                }
+                AdvanceToNextNode(); // 👈 スッキリさせるためにメソッド化
+            }
+        }
+
+        // 👇 追加: 次のノードへ進む処理を独立させたメソッド
+        private void AdvanceToNextNode()
+        {
+            if (!string.IsNullOrEmpty(currentNode.nextNodeID))
+            {
+                StartDialogue(currentNode.nextNodeID);
+            }
+            else
+            {
+                EndDialogue();
             }
         }
 
@@ -167,6 +202,96 @@ namespace Runtime.Dialogue.Logic
             callback?.Invoke();
 
             CurrentState = DialogueState.Idle;
+
+            // 会話が終わったら念のためモードをオフに
+            isAutoMode = false;
+            isSkipMode = false;
+        }
+
+        // --- Auto Mode ---
+        public void ToggleAutoMode()
+        {
+            isAutoMode = !isAutoMode;
+            Debug.Log($"Auto Mode toggled: {isAutoMode}");
+
+            if (isAutoMode)
+            {
+                DisableSkipMode(); // オートとスキップは排他
+
+                if (CurrentState == DialogueState.WaitingForAdvance)
+                {
+                    StartAutoWait(0);
+                }
+            }
+            else if (autoWaitCoroutine != null)
+            {
+                StopCoroutine(autoWaitCoroutine);
+                autoWaitCoroutine = null;
+            }
+        }
+
+        public void DisableAutoMode()
+        {
+            if (isAutoMode)
+            {
+                isAutoMode = false;
+                Debug.Log("Auto Mode disabled.");
+            }
+        }
+
+        private void StartAutoWait(int textLength)
+        {
+            if (autoWaitCoroutine != null) StopCoroutine(autoWaitCoroutine);
+            float waitTime = baseAutoWaitTime + (textLength * autoWaitTimePerChar);
+            autoWaitCoroutine = StartCoroutine(AutoWaitRoutine(waitTime));
+        }
+
+        private System.Collections.IEnumerator AutoWaitRoutine(float waitTime)
+        {
+            yield return new WaitForSeconds(waitTime);
+            autoWaitCoroutine = null;
+            AdvanceToNextNode(); // 👈 自動進行用
+        }
+
+        // --- Skip Mode (👇 今回追加) ---
+        public void ToggleSkipMode()
+        {
+            isSkipMode = !isSkipMode;
+            Debug.Log($"Skip Mode toggled: {isSkipMode}");
+
+            if (isSkipMode)
+            {
+                DisableAutoMode(); // オートとスキップは排他
+
+                if (CurrentState == DialogueState.Playing)
+                {
+                    CurrentView?.ForceCompleteTyping();
+                }
+                else if (CurrentState == DialogueState.WaitingForAdvance)
+                {
+                    StartCoroutine(SkipAdvanceRoutine());
+                }
+            }
+        }
+
+        public void DisableSkipMode()
+        {
+            if (isSkipMode)
+            {
+                isSkipMode = false;
+                Debug.Log("Skip Mode disabled.");
+            }
+        }
+
+        private System.Collections.IEnumerator SkipAdvanceRoutine()
+        {
+            // プログラムが一瞬でループしすぎてフリーズ（スタックオーバーフロー）するのを防ぐため、必ず1フレーム待つ
+            yield return null;
+
+            if (isSkipMode && CurrentState == DialogueState.WaitingForAdvance)
+            {
+                AdvanceToNextNode();
+            }
         }
     }
 }
