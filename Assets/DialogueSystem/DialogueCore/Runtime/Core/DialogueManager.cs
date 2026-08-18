@@ -17,6 +17,8 @@ namespace Runtime.Dialogue.Logic
 
     public class DialogueManager : MonoBehaviour
     {
+        public string CurrentSpeaker => currentNode != null ? currentNode.speakerName : string.Empty;
+
         public static DialogueManager Instance { get; private set; }
 
         [SerializeField] private DialogueContainer currentContainer;

@@ -36,11 +36,29 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_53bba
     speakerName: 
-    dialogueText: a
+    dialogueText: '[portrait:target=hero,exp=smile,pos=center]'
     choices: []
   - graphPosition: {x: 648, y: 253.6}
-    nextNodeID: 
+    nextNodeID: Node_a37a4
     nodeID: Node_d1fb3
+    speakerName: aaaaa
+    dialogueText: "[layout:name=Normal][portrait:target=hero,exp=smile,pos=center]\u3053\u3093\u306B\u3061\u306F\uFF01\u79C1\u306F\u52C7\u8005\u3067\u3059\u3002\n"
+    choices: []
+  - graphPosition: {x: 1312.8, y: 253.6}
+    nextNodeID: Node_f454e
+    nodeID: Node_a37a4
+    speakerName: a
+    dialogueText: "[layout:name=Narration]\u2015\u2015\u6B21\u306E\u77AC\u9593\u3001\u30A6\u30A3\u30F3\u30C9\u30A6\u306E\u5F62\u304C\u5909\u308F\u3063\u305F\u3002"
+    choices: []
+  - graphPosition: {x: 1817.6, y: 253.6}
+    nextNodeID: Node_c06f6
+    nodeID: Node_f454e
     speakerName: 
-    dialogueText: b
+    dialogueText: '[layout:name=Normal]'
+    choices: []
+  - graphPosition: {x: 2113.6, y: 253.6}
+    nextNodeID: 
+    nodeID: Node_c06f6
+    speakerName: bbb
+    dialogueText: '[portrait:pos=center,exp=clear]'
     choices: []
