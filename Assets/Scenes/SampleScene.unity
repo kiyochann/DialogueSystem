@@ -150,8 +150,8 @@ Transform:
   m_Children:
   - {fileID: 417909668}
   - {fileID: 1722828173}
-  - {fileID: 1058258980}
   - {fileID: 496983571}
+  - {fileID: 1058258980}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &160697848
@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 160697853}
   - component: {fileID: 160697855}
   - component: {fileID: 160697854}
+  - component: {fileID: 160697856}
   m_Layer: 0
   m_Name: DialogueSysem
   m_TagString: Untagged
@@ -188,7 +189,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f4151499d21eed48bdb658784322d6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueTesting
-  testData: {fileID: 11400000, guid: 1880f67da21fa9542ba27e0db578db83, type: 2}
+  testData: {fileID: 11400000, guid: e01bf124a1d61fe4d92a5569a9d70fae, type: 2}
   dialogueView: {fileID: 1905074242}
 --- !u!114 &160697850
 MonoBehaviour:
@@ -214,7 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70598b1fe4e7e5d4ebb06f4b88a2b650, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueManager
-  currentContainer: {fileID: 11400000, guid: 1880f67da21fa9542ba27e0db578db83, type: 2}
+  currentContainer: {fileID: 11400000, guid: e01bf124a1d61fe4d92a5569a9d70fae, type: 2}
   baseAutoWaitTime: 1
   autoWaitTimePerChar: 0.05
 --- !u!4 &160697852
@@ -268,6 +269,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92ab64d6fe5e27248af39f4ad5b0c9ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Logic.DialogueLayoutDispatcher
+--- !u!114 &160697856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 160697848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe2d5cbd6bf9db4ca09867831749bef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Logic.FlagManager
+  initialFlags:
+  - key: aaaa
+    value: 5
 --- !u!1 &203392050
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +309,7 @@ Transform:
   m_GameObject: {fileID: 203392050}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 169.31921, y: -540, z: 4916.172}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -403,7 +419,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 287910302}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -4916.172}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4.9526, y: 4.9526, z: 4.9526}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -411,7 +427,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -169.31921, y: 540}
+  m_AnchoredPosition: {x: 10, y: -24}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &287910304
@@ -615,7 +631,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 405810691}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -4916.172}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4.9526, y: 4.9526, z: 4.9526}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -623,7 +639,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 320.6808, y: 540}
+  m_AnchoredPosition: {x: 500, y: -24}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &405810693
@@ -807,6 +823,7 @@ GameObject:
   - component: {fileID: 417909670}
   - component: {fileID: 417909669}
   - component: {fileID: 417909675}
+  - component: {fileID: 417909676}
   m_Layer: 0
   m_Name: CommandHandlers
   m_TagString: Untagged
@@ -1003,6 +1020,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe37735e7c33700418a0c88fd5baa1f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.SpeedCommandHandler
+--- !u!114 &417909676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417909667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3bdb29b1f719ec41bb971133fe67497, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Commands.SetFlagCommandHandler
 --- !u!1 &496983570
 GameObject:
   m_ObjectHideFlags: 0
@@ -1788,7 +1817,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1812700136}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -4916.172}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 4.9526, y: 4.9526, z: 4.9526}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1796,7 +1825,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -709.3192, y: 540}
+  m_AnchoredPosition: {x: -530, y: -24}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1812700138

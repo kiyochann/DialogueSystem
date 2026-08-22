@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcc6dcf3673927a488b8d4f7d6fd5ffb, type: 3}
+  m_Name: flagTest
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Core.DialogueContainer
+  startNodeID: Node_d8be8
+  allNodes:
+  - graphPosition: {x: 100, y: 100}
+    nextNodeID: 
+    nodeID: Node_d8be8
+    speakerName: "\u6751\u4EBA"
+    dialogueText: "\u3084\u3042\u3001\u3053\u3093\u306B\u3061\u306F\uFF01\n\u30C6\u30B9\u30C8\u7528\u306B\u4E00\u6642\u30D5\u30E9\u30B0\u3092\u30AA\u30F3\u306B\u3057\u305F\u3088\u3002[set_flag:key=tmp_met_villager,val=1]"
+    choices:
+    - choiceText: "\u5263\u304F\u308C"
+      targetNodeID: Node_bd973
+      branchType: PrefabUIBranchHandler
+      conditionKey: 
+      conditionOperator: 0
+      conditionValue: 0
+    - choiceText: "\u6301\u3063\u3066\u308B"
+      targetNodeID: Node_15565
+      branchType: PrefabUIBranchHandler
+      conditionKey: has_sword
+      conditionOperator: 2
+      conditionValue: 1
+  - graphPosition: {x: 680.8, y: 100}
+    nextNodeID: Node_e1228
+    nodeID: Node_bd973
+    speakerName: 
+    dialogueText: "\u308F\u304B\u3063\u305F\u3001\u3053\u306E\u5263\u3092\u6388\u3051\u3088\u3046\uFF01\n\uFF08\u6751\u4EBA\u306F\u53F3\u5074\u306B\u79FB\u52D5\u3057\u305F\uFF09\n[set_flag:key=has_sword,val=1]"
+    choices: []
+  - graphPosition: {x: 680.8, y: 283.2}
+    nextNodeID: 
+    nodeID: Node_15565
+    speakerName: 
+    dialogueText: "\uFF08\u6751\u4EBA\u306F\u53BB\u3063\u3066\u3044\u3063\u305F\u3002\u753B\u9762\u4E0A\u306E\u7ACB\u3061\u7D75\u306F\u3059\u3079\u3066\u6D88\u53BB\u3055\u308C\u305F\u3002\uFF09\n\u30BB\u30FC\u30D6\u30C6\u30B9\u30C8\u306E\u6E96\u5099\u306F\u5B8C\u4E86\u3060\uFF01"
+    choices: []
+  - graphPosition: {x: 1089.6, y: 100}
+    nextNodeID: 
+    nodeID: Node_e1228
+    speakerName: 
+    dialogueText: "\u300C\u3042\u308A\u304C\u3068\u3046\uFF01\u300D"
+    choices: []
