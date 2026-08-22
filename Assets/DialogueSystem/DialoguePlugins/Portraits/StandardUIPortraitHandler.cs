@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,33 +10,33 @@ namespace Runtime.Dialogue.Plugins.Portraits
     [Serializable]
     public class PortraitSlot
     {
-        [Tooltip("ƒRƒ}ƒ“ƒh‚Åw’è‚·‚éˆÊ’u —á: left, center, right")]
+        [Tooltip("ã‚³ãƒãƒ³ãƒ‰ã§æŒ‡å®šã™ã‚‹ä½ç½® ä¾‹: left, center, right")]
         public string positionID;
-        [Tooltip("‘ÎÛ‚Æ‚È‚éUI‚ÌImageƒRƒ“ƒ|[ƒlƒ“ƒg")]
+        [Tooltip("å¯¾è±¡ã¨ãªã‚‹UIã®Imageã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ")]
         public Image portraitImage;
     }
 
-    [HandlerInfo(description: "w’è‚µ‚½ƒLƒƒƒ‰ƒNƒ^[‚Ì•\î‚Æ•\¦ˆÊ’u‚ğØ‚è‘Ö‚¦‚Ü‚·B", usage: "[portrait:target=hero,exp=smile,pos=center]")]
-    public class StandardUIPortraitHandler : MonoBehaviour, IDialogueCommandHandler
+    // ğŸ’¡ å¤‰æ›´ç‚¹1: IDialogueCommandHandler ã§ã¯ãªãã€æœ¬æ¥ã® IDialoguePortraitHandler ã‚’å®Ÿè£…
+    public class StandardUIPortraitHandler : MonoBehaviour, IDialoguePortraitHandler
     {
-        // IDialogueCommandHandler ‚ÌÀ‘•iTargetCommandName ‚ğ "portrait" ‚É‚·‚éj
-        public string TargetCommandName => "portrait";
+        // ğŸ’¡ å¤‰æ›´ç‚¹2: å„ªå…ˆåº¦ï¼ˆPriorityï¼‰ã‚’å®Ÿè£…ã€‚ä»–ã®ãƒ—ãƒ©ã‚°ã‚¤ãƒ³ã¨ç«¶åˆã—ãŸéš›ã®å‡¦ç†é †ã‚’æ±ºå®šã—ã¾ã™ã€‚
+        public int Priority => 0;
 
-        [Header("Character Profiles (ƒLƒƒƒ‰ƒNƒ^[ƒf[ƒ^)")]
+        [Header("Character Profiles (ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ãƒ‡ãƒ¼ã‚¿)")]
         public List<CharacterProfile> profiles = new List<CharacterProfile>();
 
-        [Header("UI Slots (•\¦ˆÊ’u‚²‚Æ‚ÌImageİ’è)")]
+        [Header("UI Slots (è¡¨ç¤ºä½ç½®ã”ã¨ã®Imageè¨­å®š)")]
         public List<PortraitSlot> portraitSlots = new List<PortraitSlot>();
 
         private void Start()
         {
-            // DialogueEventDispatcher ‚É©•ª©g‚ğuportraitvƒRƒ}ƒ“ƒh‚Ì’S“–‚Æ‚µ‚Ä“o˜^‚·‚é
-            if (DialogueEventDispatcher.Instance != null)
+            // ğŸ’¡ å¤‰æ›´ç‚¹3: EventDispatcherã§ã¯ãªãã€å°‚ç”¨ã® PortraitDispatcher ã«è‡ªèº«ã‚’ç™»éŒ²
+            if (DialoguePortraitDispatcher.Instance != null)
             {
-                DialogueEventDispatcher.Instance.RegisterHandler(this);
+                DialoguePortraitDispatcher.Instance.RegisterHandler(this);
             }
 
-            // ‰Šúó‘Ô‚Å‚Í‚·‚×‚Ä‚Ì—§‚¿ŠG‚ğ“§–¾‚É‚µ‚Ä‚¨‚­
+            // åˆæœŸçŠ¶æ…‹ã§ã¯ã™ã¹ã¦ã®ç«‹ã¡çµµã‚’é€æ˜ã«ã—ã¦ãŠã
             foreach (var slot in portraitSlots)
             {
                 if (slot.portraitImage != null)
@@ -46,38 +46,63 @@ namespace Runtime.Dialogue.Plugins.Portraits
             }
         }
 
-        // --- ’Êí‚ÌƒRƒ}ƒ“ƒhÀs ---
-        public void Execute(DialogueCommand command, Action onComplete)
+        // ğŸ’¡ å¤‰æ›´ç‚¹4: ã‚³ãƒãƒ³ãƒ‰ã®è§£æå‡¦ç†ã¯ PortraitCommandHandler ã«ä»»ã›ã€ç´”ç²‹ãªç«‹ã¡çµµã®åæ˜ å‡¦ç†ã®ã¿ã‚’å—ã‘å–ã‚‹
+        public bool TryHandlePortrait(string targetID, string expression, string position, Dictionary<string, string> args, Action onComplete)
         {
-            // DialogueCommand ‚Ì•Ö—˜ƒƒ\ƒbƒh‚ğg‚Á‚Äˆø”‚ğˆÀ‘S‚Éæ“¾
-            string targetID = command.GetString("target", "");
-            string expression = command.GetString("exp", "default");
-            string position = command.GetString("pos", "center");
-
             bool success = ApplyPortrait(targetID, expression, position);
+
             if (!success)
             {
-                Debug.LogWarning($"[StandardUIPortraitHandler] —§‚¿ŠG‚Ì“K—p‚É¸”s‚µ‚Ü‚µ‚½ (target:{targetID}, exp:{expression}, pos:{position})");
+                Debug.LogWarning($"[StandardUIPortraitHandler] ç«‹ã¡çµµã®é©ç”¨ã«å¤±æ•—ã—ã¾ã—ãŸ (target:{targetID}, exp:{expression}, pos:{position})");
             }
 
-            // ‘¦Š®—¹ˆµ‚¢‚É‚·‚éê‡‚Í‚·‚®‚ÉŒÄ‚ÔiƒtƒF[ƒh“™‚ğ‹²‚Şê‡‚ÍƒAƒjƒ[ƒVƒ‡ƒ“I—¹Œã‚ÉŒÄ‚Ôj
+            // ç”»åƒã®åˆ‡ã‚Šæ›¿ãˆè‡ªä½“ã¯ä¸€ç¬ã§çµ‚ã‚ã‚‹ãŸã‚ã€å³åº§ã«ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’å‘¼ã¶
+            // ï¼ˆãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚„ã‚¹ãƒ©ã‚¤ãƒ‰ã‚¤ãƒ³ã‚’å®Ÿè£…ã™ã‚‹å ´åˆã¯ã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³çµ‚äº†å¾Œã« onComplete ã‚’å‘¼ã¶ã‚ˆã†ã«ã—ã¾ã™ï¼‰
             onComplete?.Invoke();
+
+            return success; // å‡¦ç†ãŒè¡Œã‚ã‚ŒãŸã‹ã©ã†ã‹ã‚’ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒãƒ£ãƒ¼ã«è¿”ã™
         }
 
-        // --- ƒXƒLƒbƒv/‘‘—‚è‚Ì‹­§Š®—¹ ---
-        public void ForceComplete(DialogueCommand command)
+        // ğŸ’¡ å¤‰æ›´ç‚¹5: ã‚¹ã‚­ãƒƒãƒ—æ™‚ã®å‡¦ç†ã‚‚ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã«åˆã‚ã›ã¦ä¿®æ­£
+        public void ForceCompletePortrait(string targetID, string expression, string position, Dictionary<string, string> args)
         {
-            // ƒXƒLƒbƒv‚àˆêu‚Å“¯‚¶ˆ—‚ğ“K—p‚·‚é
-            string targetID = command.GetString("target", "");
-            string expression = command.GetString("exp", "default");
-            string position = command.GetString("pos", "center");
-
+            // ã‚¹ã‚­ãƒƒãƒ—æ™‚ã‚‚ä¸€ç¬ã§åŒã˜å‡¦ç†ã‚’é©ç”¨ã™ã‚‹
             ApplyPortrait(targetID, expression, position);
         }
 
-        // ÀÛ‚Ì‰æ‘œØ‚è‘Ö‚¦ˆ—
+        // å®Ÿéš›ã®ç”»åƒåˆ‡ã‚Šæ›¿ãˆå‡¦ç†ï¼ˆæ—¢å­˜ã®ã¾ã¾ï¼‰
+        // å®Ÿéš›ã®ç”»åƒåˆ‡ã‚Šæ›¿ãˆå‡¦ç†
         private bool ApplyPortrait(string targetID, string expression, string position)
         {
+            // ğŸ’¡ ä¿®æ­£: "clear" ã‚³ãƒãƒ³ãƒ‰ã®å‡¦ç†ï¼ˆå…¨æ¶ˆå»ã¨å€‹åˆ¥æ¶ˆå»ã®åˆ†å²ï¼‰
+            if (targetID.ToLower() == "clear")
+            {
+                // ä½ç½®ãŒ "all" ã¾ãŸã¯æœªæŒ‡å®šã®å ´åˆã¯ã™ã¹ã¦æ¶ˆã™
+                if (string.IsNullOrEmpty(position) || position.ToLower() == "all")
+                {
+                    foreach (var s in portraitSlots)
+                    {
+                        if (s.portraitImage != null)
+                        {
+                            s.portraitImage.color = new Color(1, 1, 1, 0);
+                            s.portraitImage.gameObject.SetActive(false);
+                        }
+                    }
+                }
+                else
+                {
+                    // ä½ç½®ãŒæŒ‡å®šã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€ãã®ã‚¹ãƒ­ãƒƒãƒˆï¼ˆä¾‹: leftï¼‰ã ã‘ã‚’æ¶ˆã™
+                    var slotToClear = portraitSlots.Find(s => s.positionID == position);
+                    if (slotToClear != null && slotToClear.portraitImage != null)
+                    {
+                        slotToClear.portraitImage.color = new Color(1, 1, 1, 0);
+                        slotToClear.portraitImage.gameObject.SetActive(false);
+                    }
+                }
+                return true; // ã‚¯ãƒªã‚¢å‡¦ç†ã‚’å®Ÿè¡Œã—ãŸãŸã‚ã“ã“ã§çµ‚äº†
+            }
+
+            // --- ã“ã“ã‹ã‚‰ä¸‹ã¯æ—¢å­˜ã®è¡¨ç¤ºå‡¦ç†ã¨åŒã˜ ---
             var profile = profiles.Find(p => p.characterID == targetID);
             if (profile == null) return false;
 
