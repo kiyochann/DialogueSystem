@@ -5,7 +5,15 @@ using Runtime.Dialogue.Logic;
 
 namespace Runtime.Dialogue.Plugins.Commands
 {
-    [HandlerInfo(description: "ゲーム内のフラグ・変数を設定します。", usage: "[set_flag:key=変数名,val=数値]")]
+    [HandlerInfo(
+    description: @"ゲーム内のフラグや変数（FlagManager）の値を設定・更新するためのコマンドハンドラーです[cite: 6]。",
+    usage: @"【基本パラメータ】
+[set_flag:key=変数名, val=数値]
+
+【使用例】
+・フラグを1に設定: [set_flag:key=has_key,val=1][cite: 6]
+・フラグを0にリセット: [set_flag:key=quest_clear,val=0]"
+)]
     public class SetFlagCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "set_flag";

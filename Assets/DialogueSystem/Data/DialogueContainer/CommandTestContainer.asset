@@ -86,14 +86,8 @@ MonoBehaviour:
     speakerName: 
     dialogueText: b
     choices: []
-  - graphPosition: {x: 3109.6, y: 252.79999}
-    nextNodeID: 
-    nodeID: Node_d3c0b
-    speakerName: 
-    dialogueText: b
-    choices: []
   - graphPosition: {x: 3109.6, y: 100}
-    nextNodeID: 
+    nextNodeID: Node_14f71
     nodeID: Node_8b362
     speakerName: 
     dialogueText: a
@@ -102,7 +96,7 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_9021a
     speakerName: 
-    dialogueText: "\u3053\u3053\u306B\u30BB\u30EA\u30D5\u3092\u5165\u529B"
+    dialogueText: '[portrait:target=clear,pos=all]'
     choices:
     - choiceText: New Choice
       targetNodeID: Node_8b362
@@ -116,11 +110,15 @@ MonoBehaviour:
       conditionKey: Gold
       conditionOperator: 4
       conditionValue: 1
-  - graphPosition: {x: 103.2, y: 100}
+  - graphPosition: {x: -96.8, y: 100}
     nextNodeID: 
     nodeID: Node_60c34
     speakerName: 
-    dialogueText: '[bgm:name=bg, stop=false][portrait:target=hero,exp=smile,pos=L]'
+    dialogueText: '[dialogue_fade:type=in,time=0.5]
+
+      [bgm:name=bg, stop=false]
+
+      [portrait:target=hero,exp=smile,pos=L]'
     choices:
     - choiceText: a
       targetNodeID: Node_e15cc
@@ -140,9 +138,33 @@ MonoBehaviour:
       conditionKey: 
       conditionOperator: 0
       conditionValue: 0
-  - graphPosition: {x: 626.4, y: 408.8}
+    - choiceText: New Choice
+      targetNodeID: Node_74e5f
+      branchType: DefaultChoiceHandler
+      conditionKey: 
+      conditionOperator: 0
+      conditionValue: 0
+  - graphPosition: {x: 3109.6, y: 252}
+    nextNodeID: Node_14f71
+    nodeID: Node_d3c0b
+    speakerName: 
+    dialogueText: b
+    choices: []
+  - graphPosition: {x: 3434.4, y: 547.2}
     nextNodeID: 
+    nodeID: Node_14f71
+    speakerName: 
+    dialogueText: '[dialogue_fade:type=out,time=1.0]'
+    choices: []
+  - graphPosition: {x: 626.4, y: 440.8}
+    nextNodeID: Node_14f71
     nodeID: Node_1bac8
     speakerName: 
-    dialogueText: "\u3053\u3053\u306B\u30BB\u30EA\u30D5\u3092\u5165\u529B"
+    dialogueText: '[portrait:target=clear,pos=all]'
+    choices: []
+  - graphPosition: {x: 626.4, y: 616}
+    nextNodeID: Node_14f71
+    nodeID: Node_74e5f
+    speakerName: 
+    dialogueText: '[portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L]'
     choices: []

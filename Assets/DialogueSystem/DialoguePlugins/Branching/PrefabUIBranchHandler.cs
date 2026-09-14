@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // 👈 修正ポイント1: TextMeshProを使うための宣言を追加
+using TMPro;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Logic;
+using Runtime.Dialogue.Audio; // 👈 追加: SE再生用の参照
 
 namespace Runtime.Dialogue.Branching
 {
@@ -15,6 +17,9 @@ namespace Runtime.Dialogue.Branching
         [Header("UI Settings")]
         [SerializeField] private GameObject branchUIPrefab;
         [SerializeField] private Transform uiParent;
+
+        [Header("Audio Settings")]
+        [SerializeField] private string defaultSEKey = "choice_select"; // 👈 追加: 決定音のキー
 
         public int Priority => 50;
         private GameObject currentUIInstance;
@@ -65,7 +70,6 @@ namespace Runtime.Dialogue.Branching
                     var choice = validChoices[i];
                     btn.gameObject.SetActive(true);
 
-                    // 💡 修正ポイント2: TextMeshProを先に探し、無ければ標準Textを探す
                     var tmpText = btn.GetComponentInChildren<TextMeshProUGUI>();
                     if (tmpText != null)
                     {
@@ -80,6 +84,9 @@ namespace Runtime.Dialogue.Branching
                     btn.onClick.RemoveAllListeners();
                     btn.onClick.AddListener(() =>
                     {
+                        // 💡 修正箇所: クリック時にSE（決定音）を鳴らす処理を追加
+                        DialogueAudioManager.Instance?.PlaySE(defaultSEKey);
+
                         if (currentUIInstance != null) Destroy(currentUIInstance);
                         onBranchDecided?.Invoke(choice.targetNodeID);
                     });

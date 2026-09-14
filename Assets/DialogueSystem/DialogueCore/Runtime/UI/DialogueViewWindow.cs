@@ -6,30 +6,27 @@ using TMPro;
 using UnityEngine.UI;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Logic;
-using Runtime.Dialogue.Audio; // 音声関連名前空間を追加
+using Runtime.Dialogue.Audio;
 
 namespace Runtime.Dialogue
 {
-    /// <summary>
-    /// 画面下の固定ウィンドウ型UI(パターンA)を制御するクラス
-    /// </summary>
     public class DialogueViewWindow : MonoBehaviour, IDialogueView
     {
         [Header("UI References")]
-        [SerializeField] private GameObject windowRoot;         // ウィンドウ全体の親オブジェクト
-        [SerializeField] private TextMeshProUGUI nameText;       // 名前テキスト
-        [SerializeField] private TextMeshProUGUI bodyText;       // 本文テキスト
-        [SerializeField] private Transform choiceButtonParent;   // 選択ボタンを配置する親コンテナ
-        [SerializeField] private Button choiceButtonPrefab;      // 選択ボタンのプレハブ
+        [SerializeField] private GameObject windowRoot;
+        [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] private TextMeshProUGUI bodyText;
+        [SerializeField] private Transform choiceButtonParent;
+        [SerializeField] private Button choiceButtonPrefab;
 
         [Header("Audio Component")]
-        [SerializeField] private DialogueTypewriterAudio typewriterAudio; // タイピング音制御コンポーネント
+        [SerializeField] private DialogueTypewriterAudio typewriterAudio;
 
         [Header("Settings")]
-        [SerializeField] private float typingSpeed = 0.05f;      // 文字の表示速度(秒)
+        [SerializeField] private float typingSpeed = 0.05f;
 
         [Header("Fonts")]
-        [SerializeField] private TMP_FontAsset defaultFont;      // 初期状態で使用するデフォルトフォント
+        [SerializeField] private TMP_FontAsset defaultFont;
 
         private Coroutine typingCoroutine;
         private string currentFullText;
@@ -37,15 +34,17 @@ namespace Runtime.Dialogue
         private Action onCompleteCallback;
         private List<Button> activeButtons = new List<Button>();
 
+        public bool IsTyping => typingCoroutine != null;
+        public bool IsShowingChoices { get; private set; } = false;
+
         private void Awake()
         {
-            // 自動参照の補完 (FindFirstObjectByType に修正)
             if (typewriterAudio == null)
             {
-                typewriterAudio = FindFirstObjectByType<DialogueTypewriterAudio>();
+                // 旧API(FindObjectOfType)の非推奨警告を解消するため FindAnyObjectByType を使用
+                typewriterAudio = UnityEngine.Object.FindAnyObjectByType<DialogueTypewriterAudio>();
             }
 
-            // 開始時にDialogueManagerへ自分自身(View)を登録
             if (DialogueManager.Instance != null)
             {
                 DialogueManager.Instance.RegisterView(this);
@@ -55,11 +54,7 @@ namespace Runtime.Dialogue
 
         public void InitializeView()
         {
-            if (windowRoot != null)
-            {
-                windowRoot.SetActive(true);
-            }
-
+            if (windowRoot != null) windowRoot.SetActive(true);
             if (bodyText != null) bodyText.enabled = true;
             if (nameText != null) nameText.enabled = true;
 
@@ -72,11 +67,7 @@ namespace Runtime.Dialogue
 
         public void CloseView()
         {
-            if (windowRoot != null)
-            {
-                windowRoot.SetActive(false);
-            }
-
+            if (windowRoot != null) windowRoot.SetActive(false);
             if (bodyText != null) bodyText.enabled = false;
             if (nameText != null) nameText.enabled = false;
 
@@ -101,17 +92,22 @@ namespace Runtime.Dialogue
             DisplaySentence(speakerID, cleanText, new List<DialogueCommand>(), onTypingComplete);
         }
 
-        /// <summary>
-        /// 1文字ずつ出力しながら、タイプ音再生とタグ演出をリアルタイム実行するコルーチン
-        /// </summary>
         private IEnumerator TypeTextRoutine()
         {
             bodyText.text = currentFullText;
             bodyText.maxVisibleCharacters = 0;
             bodyText.ForceMeshUpdate();
 
-            // 新しいテキスト送りの開始時にタイプライター音のカウンターを初期化
             typewriterAudio?.ResetCounter();
+
+            // 表示するテキストが空（コマンドのみ等）の場合は、音を鳴らさずにコマンドだけ処理して終了
+            if (string.IsNullOrWhiteSpace(currentFullText))
+            {
+                ExecuteRemainingCommands(false);
+                typingCoroutine = null;
+                onCompleteCallback?.Invoke();
+                yield break;
+            }
 
             int totalVisibleChars = bodyText.textInfo.characterCount;
             int currentVisibleIndex = 0;
@@ -139,7 +135,6 @@ namespace Runtime.Dialogue
                 currentVisibleIndex++;
                 bodyText.maxVisibleCharacters = currentVisibleIndex;
 
-                // 1文字増えるごとにタイピング音を再生 (話者キー等を渡す拡張も可能)
                 typewriterAudio?.OnCharacterTyped();
 
                 yield return new WaitForSeconds(typingSpeed);
@@ -158,10 +153,7 @@ namespace Runtime.Dialogue
                 typingCoroutine = null;
             }
 
-            if (bodyText != null)
-            {
-                bodyText.maxVisibleCharacters = 99999;
-            }
+            if (bodyText != null) bodyText.maxVisibleCharacters = 99999;
 
             ExecuteRemainingCommands(true);
             onCompleteCallback?.Invoke();
@@ -189,6 +181,7 @@ namespace Runtime.Dialogue
         public void ShowChoices(List<ChoiceData> choices, Action<int> onChoiceSelected)
         {
             HideChoices();
+            IsShowingChoices = true;
 
             for (int i = 0; i < choices.Count; ++i)
             {
@@ -200,7 +193,6 @@ namespace Runtime.Dialogue
 
                 btn.onClick.AddListener(() =>
                 {
-                    // 選択肢決定時の効果音を再生
                     DialogueAudioManager.Instance?.PlaySE("choice_select");
                     onChoiceSelected?.Invoke(index);
                 });
@@ -210,6 +202,7 @@ namespace Runtime.Dialogue
 
         public void HideChoices()
         {
+            IsShowingChoices = false;
             foreach (var btn in activeButtons)
             {
                 if (btn != null) Destroy(btn.gameObject);

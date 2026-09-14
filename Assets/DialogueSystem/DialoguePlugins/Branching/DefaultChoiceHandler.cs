@@ -8,7 +8,18 @@ using Runtime.Dialogue.Logic;
 
 namespace Runtime.Dialogue.Branching
 {
-    [HandlerInfo(description: "プレイヤーが画面上のボタンをクリックして選択する、標準的な選択肢を表示します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「DefaultChoiceHandler」を指定してください。")]
+    [HandlerInfo(
+        description: @"標準的なダイアログUI（DialogueViewWindow）を用いて画面上にボタンを生成・表示する分岐ハンドラーです。
+FlagManagerと連携した条件評価（conditionKey / conditionOperator / conditionValue）にも対応しています。",
+
+        usage: @"【設定方法】
+1. ノードエディタ上で選択肢の BranchType に「DefaultChoiceHandler」または「DefaultChoice」を指定します。
+2. 標準UI（DialogueViewWindow）の choiceButtonPrefab を通じてボタンが動的に生成されます。
+
+【フラグ条件付き選択肢の例】
+・条件指定: conditionKey=""has_key"", conditionOperator=""=="", conditionValue=""1""
+  (※FlagManagerで条件を満たしている場合のみ、画面にボタンが表示されます)"
+    )]
     public class DefaultChoiceHandler : MonoBehaviour, IDialogueBranchHandler
     {
         public int Priority => 0; // 最低優先度（フォールバック用）
@@ -31,7 +42,7 @@ namespace Runtime.Dialogue.Branching
 
                 if (targetChoices.Count == 0) return false;
 
-                // 2. 追加：FlagManager による条件評価でさらにフィルタリングする
+                // 2. FlagManager による条件評価でさらにフィルタリングする
                 var displayChoices = new List<ChoiceData>();
                 foreach (var choice in targetChoices)
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,109 +15,243 @@ namespace Runtime.Dialogue.Plugins.Portraits
         public string positionID;
         [Tooltip("対象となるUIのImageコンポーネント")]
         public Image portraitImage;
+        [Tooltip("フェード制御用のCanvasGroup（未設定の場合はImageのColorアルファを使用）")]
+        public CanvasGroup canvasGroup;
+        [Tooltip("モーション演出用のAnimator（任意）")]
+        public Animator animator;
+
+        [HideInInspector] public Coroutine currentRoutine;
+        [HideInInspector] public Vector3 defaultPosition;
     }
 
-    // 💡 変更点1: IDialogueCommandHandler ではなく、本来の IDialoguePortraitHandler を実装
     public class StandardUIPortraitHandler : MonoBehaviour, IDialoguePortraitHandler
     {
-        // 💡 変更点2: 優先度（Priority）を実装。他のプラグインと競合した際の処理順を決定します。
         public int Priority => 0;
 
-        [Header("Character Profiles (キャラクターデータ)")]
+        [Header("Character Profiles")]
         public List<CharacterProfile> profiles = new List<CharacterProfile>();
 
-        [Header("UI Slots (表示位置ごとのImage設定)")]
+        [Header("UI Slots")]
         public List<PortraitSlot> portraitSlots = new List<PortraitSlot>();
+
+        private void Awake()
+        {
+            // 初期位置を保存
+            foreach (var slot in portraitSlots)
+            {
+                if (slot.portraitImage != null)
+                {
+                    slot.defaultPosition = slot.portraitImage.rectTransform.anchoredPosition;
+                }
+            }
+        }
 
         private void Start()
         {
-            // 💡 変更点3: EventDispatcherではなく、専用の PortraitDispatcher に自身を登録
             if (DialoguePortraitDispatcher.Instance != null)
             {
                 DialoguePortraitDispatcher.Instance.RegisterHandler(this);
             }
 
-            // 初期状態ではすべての立ち絵を透明にしておく
             foreach (var slot in portraitSlots)
             {
-                if (slot.portraitImage != null)
-                {
-                    slot.portraitImage.color = new Color(1, 1, 1, 0);
-                }
+                SetSlotAlpha(slot, 0f);
             }
         }
 
-        // 💡 変更点4: コマンドの解析処理は PortraitCommandHandler に任せ、純粋な立ち絵の反映処理のみを受け取る
         public bool TryHandlePortrait(string targetID, string expression, string position, Dictionary<string, string> args, Action onComplete)
         {
-            bool success = ApplyPortrait(targetID, expression, position);
-
-            if (!success)
-            {
-                Debug.LogWarning($"[StandardUIPortraitHandler] 立ち絵の適用に失敗しました (target:{targetID}, exp:{expression}, pos:{position})");
-            }
-
-            // 画像の切り替え自体は一瞬で終わるため、即座にコールバックを呼ぶ
-            // （フェードインやスライドインを実装する場合は、アニメーション終了後に onComplete を呼ぶようにします）
-            onComplete?.Invoke();
-
-            return success; // 処理が行われたかどうかをディスパッチャーに返す
-        }
-
-        // 💡 変更点5: スキップ時の処理もインターフェースに合わせて修正
-        public void ForceCompletePortrait(string targetID, string expression, string position, Dictionary<string, string> args)
-        {
-            // スキップ時も一瞬で同じ処理を適用する
-            ApplyPortrait(targetID, expression, position);
-        }
-
-        // 実際の画像切り替え処理（既存のまま）
-        // 実際の画像切り替え処理
-        private bool ApplyPortrait(string targetID, string expression, string position)
-        {
-            // 💡 修正: "clear" コマンドの処理（全消去と個別消去の分岐）
+            // clearコマンドの処理
             if (targetID.ToLower() == "clear")
             {
-                // 位置が "all" または未指定の場合はすべて消す
-                if (string.IsNullOrEmpty(position) || position.ToLower() == "all")
-                {
-                    foreach (var s in portraitSlots)
-                    {
-                        if (s.portraitImage != null)
-                        {
-                            s.portraitImage.color = new Color(1, 1, 1, 0);
-                            s.portraitImage.gameObject.SetActive(false);
-                        }
-                    }
-                }
-                else
-                {
-                    // 位置が指定されている場合は、そのスロット（例: left）だけを消す
-                    var slotToClear = portraitSlots.Find(s => s.positionID == position);
-                    if (slotToClear != null && slotToClear.portraitImage != null)
-                    {
-                        slotToClear.portraitImage.color = new Color(1, 1, 1, 0);
-                        slotToClear.portraitImage.gameObject.SetActive(false);
-                    }
-                }
-                return true; // クリア処理を実行したためここで終了
+                HandleClear(position, args, onComplete);
+                return true;
             }
 
-            // --- ここから下は既存の表示処理と同じ ---
             var profile = profiles.Find(p => p.characterID == targetID);
             if (profile == null) return false;
 
             var sprite = profile.GetExpression(expression);
-            if (sprite == null) return false;
-
             var slot = portraitSlots.Find(s => s.positionID == position);
             if (slot == null || slot.portraitImage == null) return false;
 
+            // コルーチン重なり防止
+            if (slot.currentRoutine != null) StopCoroutine(slot.currentRoutine);
+
+            // 引数の解析
+            float fadeTime = GetFloatArg(args, "fade", 0f);
+            float moveTime = GetFloatArg(args, "moveTime", 0f);
+            string motion = GetStringArg(args, "motion", "");
+
             slot.portraitImage.sprite = sprite;
-            slot.portraitImage.color = new Color(1, 1, 1, 1);
             slot.portraitImage.gameObject.SetActive(true);
 
+            // 💡 修正ポイント: キャラ固有の AnimatorController を動的割り当て
+            if (slot.animator != null)
+            {
+                if (profile.animatorController != null)
+                {
+                    slot.animator.runtimeAnimatorController = profile.animatorController;
+                }
+
+                if (!string.IsNullOrEmpty(motion)) slot.animator.SetTrigger(motion);
+                if (!string.IsNullOrEmpty(expression)) slot.animator.SetTrigger(expression);
+            }
+
+            // フェード・移動コルーチンの開始
+            slot.currentRoutine = StartCoroutine(ApplyPortraitRoutine(slot, fadeTime, moveTime, onComplete));
             return true;
+        }
+
+        private IEnumerator ApplyPortraitRoutine(PortraitSlot slot, float fadeTime, float moveTime, Action onComplete)
+        {
+            float duration = Mathf.Max(fadeTime, moveTime);
+            float timer = 0f;
+
+            float startAlpha = GetSlotAlpha(slot);
+            Vector3 startPos = slot.portraitImage.rectTransform.anchoredPosition;
+            Vector3 targetPos = slot.defaultPosition;
+
+            while (timer < duration)
+            {
+                timer += Time.deltaTime;
+                float progress = Mathf.Clamp01(timer / duration);
+
+                if (fadeTime > 0f)
+                {
+                    SetSlotAlpha(slot, Mathf.Lerp(startAlpha, 1f, timer / fadeTime));
+                }
+                else
+                {
+                    SetSlotAlpha(slot, 1f);
+                }
+
+                if (moveTime > 0f)
+                {
+                    slot.portraitImage.rectTransform.anchoredPosition = Vector3.Lerp(startPos, targetPos, timer / moveTime);
+                }
+
+                yield return null;
+            }
+
+            SetSlotAlpha(slot, 1f);
+            slot.portraitImage.rectTransform.anchoredPosition = targetPos;
+
+            slot.currentRoutine = null;
+            onComplete?.Invoke();
+        }
+
+        private void HandleClear(string position, Dictionary<string, string> args, Action onComplete)
+        {
+            float fadeTime = GetFloatArg(args, "fade", 0f);
+
+            List<PortraitSlot> targetSlots = (string.IsNullOrEmpty(position) || position.ToLower() == "all")
+                ? portraitSlots
+                : portraitSlots.FindAll(s => s.positionID == position);
+
+            int pending = targetSlots.Count;
+            if (pending == 0)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            foreach (var slot in targetSlots)
+            {
+                if (slot.currentRoutine != null) StopCoroutine(slot.currentRoutine);
+
+                slot.currentRoutine = StartCoroutine(ClearRoutine(slot, fadeTime, () =>
+                {
+                    pending--;
+                    if (pending <= 0) onComplete?.Invoke();
+                }));
+            }
+        }
+
+        private IEnumerator ClearRoutine(PortraitSlot slot, float fadeTime, Action onComplete)
+        {
+            if (fadeTime > 0f)
+            {
+                float timer = 0f;
+                float startAlpha = GetSlotAlpha(slot);
+
+                while (timer < fadeTime)
+                {
+                    timer += Time.deltaTime;
+                    SetSlotAlpha(slot, Mathf.Lerp(startAlpha, 0f, timer / fadeTime));
+                    yield return null;
+                }
+            }
+
+            SetSlotAlpha(slot, 0f);
+            if (slot.portraitImage != null) slot.portraitImage.gameObject.SetActive(false);
+
+            slot.currentRoutine = null;
+            onComplete?.Invoke();
+        }
+
+        public void ForceCompletePortrait(string targetID, string expression, string position, Dictionary<string, string> args)
+        {
+            StopAllCoroutines();
+            if (targetID.ToLower() == "clear")
+            {
+                foreach (var s in portraitSlots)
+                {
+                    SetSlotAlpha(s, 0f);
+                    if (s.portraitImage != null) s.portraitImage.gameObject.SetActive(false);
+                }
+                return;
+            }
+
+            var profile = profiles.Find(p => p.characterID == targetID);
+            var slot = portraitSlots.Find(s => s.positionID == position);
+            if (profile != null && slot != null && slot.portraitImage != null)
+            {
+                // スキップ時も AnimatorController を動的セット
+                if (slot.animator != null && profile.animatorController != null)
+                {
+                    slot.animator.runtimeAnimatorController = profile.animatorController;
+                }
+
+                slot.portraitImage.sprite = profile.GetExpression(expression);
+                SetSlotAlpha(slot, 1f);
+                slot.portraitImage.gameObject.SetActive(true);
+            }
+        }
+
+        private void SetSlotAlpha(PortraitSlot slot, float alpha)
+        {
+            if (slot.canvasGroup != null)
+            {
+                slot.canvasGroup.alpha = alpha;
+            }
+            else if (slot.portraitImage != null)
+            {
+                Color c = slot.portraitImage.color;
+                c.a = alpha;
+                slot.portraitImage.color = c;
+            }
+        }
+
+        private float GetSlotAlpha(PortraitSlot slot)
+        {
+            if (slot.canvasGroup != null) return slot.canvasGroup.alpha;
+            if (slot.portraitImage != null) return slot.portraitImage.color.a;
+            return 0f;
+        }
+
+        private float GetFloatArg(Dictionary<string, string> args, string key, float defaultValue)
+        {
+            if (args != null && args.TryGetValue(key, out string val) && float.TryParse(val, out float res))
+                return res;
+            return defaultValue;
+        }
+
+        private string GetStringArg(Dictionary<string, string> args, string key, string defaultValue)
+        {
+            if (args != null && args.TryGetValue(key, out string val))
+                return val;
+            return defaultValue;
         }
     }
 }

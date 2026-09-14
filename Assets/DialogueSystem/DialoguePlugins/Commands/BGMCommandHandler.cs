@@ -8,7 +8,21 @@ namespace Runtime.Dialogue.Commands
     /// <summary>
     /// [bgm:name=曲名] または [bgm:clip=曲名] を処理するコマンドハンドラー
     /// </summary>
-    [HandlerInfo(description: "BGMを再生または停止します。", usage: "[bgm:name=BGMの名前, stop=false]")]
+    [HandlerInfo(
+    description: @"BGMの再生や停止を行うコマンドハンドラーです[cite: 7]。内部で DialogueAudioManager を呼び出して制御します[cite: 7]。
+
+【コンテナ・シーン側の事前準備】
+1. シーン上に空のGameObjectを作成し、音源を管理するオーディオマネージャー（DialogueAudioManager等）と、このハンドラー（BGMCommandHandler）をアタッチします。
+2. 再生したいBGMのオーディオクリップが適切なリソースフォルダやマネージャー側のリストに登録されていることを確認してください。
+
+【基本パラメータ】
+・曲名を指定して再生: [bgm:name=曲名] または [bgm:clip=曲名]
+・BGMの停止: [bgm:stop=true]
+・ループ設定の変更: [bgm:name=曲名, loop=false]",
+    usage: @"【使用例】
+・BGMを再生する: [bgm:name=MainTheme]
+・BGMを停止する: [bgm:stop=true]"
+)]
     public class BGMCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "bgm";

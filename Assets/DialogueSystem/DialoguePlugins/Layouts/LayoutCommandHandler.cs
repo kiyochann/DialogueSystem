@@ -4,7 +4,16 @@ using Runtime.Dialogue;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Logic;
 
-[HandlerInfo("ウィンドウのレイアウトや枠の見た目を変更します", "使い方: [layout:name=Narration]")]
+[HandlerInfo(
+    description: @"ダイアログウィンドウのレイアウトや枠の見た目、表示スタイルを切り替えるコマンドハンドラーです。",
+    usage: @"【基本パラメータ】
+[layout:name=レイアウト名]
+
+【使用例】
+・標準レイアウト: [layout:name=Normal]
+・ナレーション用: [layout:name=Narration]
+・全画面表示用: [layout:name=FullScreen]"
+)]
 public class LayoutCommandHandler : MonoBehaviour, IDialogueCommandHandler
 {
     public string TargetCommandName => "layout";

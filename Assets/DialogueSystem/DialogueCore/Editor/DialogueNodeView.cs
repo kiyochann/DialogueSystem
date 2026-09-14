@@ -7,6 +7,7 @@ using UnityEditor.UIElements;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Branching;
 
+
 namespace DialogueSystem.Editor
 {
     public class DialogueNodeView : Node

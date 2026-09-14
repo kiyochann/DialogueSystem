@@ -16,10 +16,16 @@ namespace Runtime.Dialogue.Plugins.Commands
         public GameObject targetObject;
     }
 
-    [HandlerInfo("オブジェクトのメソッドを柔軟な指定方式で呼び出します",
-                 "使い方1: [call:mode=nearest,script=EnemyController,method=Attack]\n" +
-                 "使い方2: [call:mode=tag,tag=Boss,method=PlayAnim,arg=Roar]\n" +
-                 "使い方3: [call:mode=direct,target=CameraRig,script=CameraShake,method=Shake]")]
+    [HandlerInfo(
+    description: @"任意のオブジェクトにアタッチされたスクリプトのメソッドを、柔軟な指定方式（最近接・カスタムタグ・インスペクター登録）で動的に呼び出すコマンドハンドラーです[cite: 5]。",
+    usage: @"【基本パラメータ】
+[call:mode=方式, script=スクリプト名, method=メソッド名, arg=引数]
+
+【使用例】
+・最も近い敵を攻撃: [call:mode=nearest,script=EnemyController,method=Attack]
+・カスタムタグで指定: [call:mode=tag,tag=Boss,method=PlayAnim,arg=Roar][cite: 5]
+・インスペクター登録から指定: [call:mode=direct,target=CameraRig,script=CameraShake,method=Shake][cite: 5]"
+)]
     public class GenericCallCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "call";

@@ -204,7 +204,19 @@ namespace DialogueSystem.Editor
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel("使用例:");
-                EditorGUILayout.SelectableLabel(usage, EditorStyles.textField, GUILayout.Height(EditorGUIUtility.singleLineHeight));
+
+                // 💡 修正ポイント: 改行数に合わせて描画の高さを動的に計算する
+                GUIStyle multiLineStyle = new GUIStyle(EditorStyles.textField)
+                {
+                    wordWrap = true
+                };
+
+                // 改行コード（\n）の数をカウントして行数を取得
+                int lineCount = usage.Split('\n').Length;
+                // 行数に応じた高さを算出（最低1行分を保証）
+                float labelHeight = EditorGUIUtility.singleLineHeight * Mathf.Max(1, lineCount) + 6f;
+
+                EditorGUILayout.SelectableLabel(usage, multiLineStyle, GUILayout.Height(labelHeight));
                 EditorGUILayout.EndHorizontal();
             }
 
