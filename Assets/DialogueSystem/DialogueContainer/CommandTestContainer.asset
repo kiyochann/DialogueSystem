@@ -120,21 +120,21 @@ MonoBehaviour:
     nextNodeID: 
     nodeID: Node_60c34
     speakerName: 
-    dialogueText: 
+    dialogueText: '[bgm:name=bg, stop=false][portrait:target=hero,exp=smile,pos=L]'
     choices:
-    - choiceText: New Choice
+    - choiceText: a
       targetNodeID: Node_e15cc
       branchType: DefaultChoiceHandler
       conditionKey: 
       conditionOperator: 0
       conditionValue: 0
-    - choiceText: New Choice
+    - choiceText: b
       targetNodeID: Node_eb56f
       branchType: DefaultChoiceHandler
       conditionKey: 
       conditionOperator: 0
       conditionValue: 0
-    - choiceText: New Choice
+    - choiceText: c
       targetNodeID: Node_1bac8
       branchType: DefaultChoiceHandler
       conditionKey: 

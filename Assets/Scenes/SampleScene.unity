@@ -175,6 +175,7 @@ GameObject:
   - component: {fileID: 160697859}
   - component: {fileID: 160697858}
   - component: {fileID: 160697857}
+  - component: {fileID: 160697862}
   m_Layer: 0
   m_Name: DialogueSysem
   m_TagString: Untagged
@@ -689,11 +690,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ad1202f70d6f94a9b21194cfcb4a80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Audio.DialogueAudioManager
-  audioDatabase: {fileID: 0}
+  audioDatabases:
+  - {fileID: 11400000, guid: f3dcd7d7474dd564980fbeb9ec55ef69, type: 2}
+  - {fileID: 11400000, guid: dc2207b4b81e3e04681e65df26bd39fa, type: 2}
   bgmSource: {fileID: 160697860}
   seSource: {fileID: 160697859}
   voiceSource: {fileID: 160697858}
   typingSource: {fileID: 160697857}
+--- !u!114 &160697862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 160697848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fdc588f15e2cfc4891962c6128789c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Audio.DialogueTypewriterAudio
+  defaultTypingKey: t6
+  playIntervalCharacters: 1
+  useRandomPitch: 0
 --- !u!1 &203392050
 GameObject:
   m_ObjectHideFlags: 0
@@ -1281,9 +1299,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2b47463e8b54ad4f8a7f0a683a3b82c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.SECommandHandler
-  audioClips:
-  - {fileID: 8300000, guid: 01a52653b49a49242a1b5fc12906a877, type: 3}
-  - {fileID: 8300000, guid: a85a56cbe69710e4d832435f7adf86bd, type: 3}
 --- !u!82 &417909671
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2478,6 +2493,7 @@ MonoBehaviour:
   bodyText: {fileID: 983799988}
   choiceButtonParent: {fileID: 1085741772}
   choiceButtonPrefab: {fileID: 287873248718608711, guid: 74780f2f7ab01ff4996581e992de564e, type: 3}
+  typewriterAudio: {fileID: 160697862}
   typingSpeed: 0.05
   defaultFont: {fileID: 11400000, guid: efc93d5a0d9bae44397cc795954f0b92, type: 2}
 --- !u!114 &1905074243

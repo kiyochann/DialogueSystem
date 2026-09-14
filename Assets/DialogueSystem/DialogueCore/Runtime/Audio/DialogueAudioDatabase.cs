@@ -15,9 +15,9 @@ namespace Runtime.Dialogue.Audio
     [System.Serializable]
     public struct AudioData
     {
-        public string key;           // 識別キー (例: "hero_voice_01", "click_se")
-        public AudioType type;       // 音の種類
-        public AudioClip clip;        // オーディオファイル
+        public string key;
+        public AudioType type;
+        public AudioClip clip;
     }
 
     [CreateAssetMenu(fileName = "DialogueAudioDatabase", menuName = "Dialogue/Audio Database")]
@@ -35,7 +35,7 @@ namespace Runtime.Dialogue.Audio
         }
 
         /// <summary>
-        /// キーのみで検索（種別を問わないフォールバック用）
+        /// キーのみで検索
         /// </summary>
         public AudioClip GetClip(string key)
         {

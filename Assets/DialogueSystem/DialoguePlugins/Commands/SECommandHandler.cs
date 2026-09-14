@@ -1,55 +1,48 @@
 ﻿using Runtime.Dialogue.Core;
+using Runtime.Dialogue.Audio;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Runtime.Dialogue.Commands
 {
-    [HandlerInfo(description: "指定された名前のSE（効果音）を再生します。", usage: "[se:clip=SEの名前]")]
-    [RequireComponent(typeof(AudioSource))]
+    /// <summary>
+    /// [se:name=SEの名前] または [se:clip=SEの名前] を処理するコマンドハンドラー
+    /// </summary>
+    [HandlerInfo(description: "指定された名前のSE（効果音）をデータベースから再生します。", usage: "[se:name=SEの名前]")]
     public class SECommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "se";
 
-        [Tooltip("ここにInspectorからSEを登録してください")]
-        [SerializeField] private List<AudioClip> audioClips = new List<AudioClip>();
-
-        private AudioSource audioSource;
-
-        private void Awake()
-        {
-            audioSource = GetComponent<AudioSource>();
-        }
-
         private void Start()
         {
             if (DialogueEventDispatcher.Instance != null)
+            {
                 DialogueEventDispatcher.Instance.RegisterHandler(this);
+            }
         }
 
         public void Execute(DialogueCommand command, Action onComplete)
         {
-            string clipName = command.GetString("clip", "");
-            AudioClip clip = audioClips.Find(c => c.name == clipName);
+            PlaySE(command);
 
-            if (clip != null)
-            {
-                audioSource.PlayOneShot(clip);
-                Debug.Log($"🔊 [SE] 再生しました: {clipName}");
-            }
-            else
-            {
-                Debug.LogWarning($"[SE] 指定されたクリップ '{clipName}' がInspectorに登録されていません。");
-            }
-
-            // SEは鳴らしっぱなしで次へ進むので即コールバック
+            // SEは鳴らしっぱなしで会話を進行させるため即時完了
             onComplete?.Invoke();
         }
 
         public void ForceComplete(DialogueCommand command)
         {
-            // スキップ時も一応鳴らす
-            Execute(command, null);
+            // スキップ時も効果音を出力（連打対策等はAudioManager側またはここで行う）
+            PlaySE(command);
+        }
+
+        private void PlaySE(DialogueCommand command)
+        {
+            string seKey = command.GetString("name", command.GetString("clip", ""));
+
+            if (!string.IsNullOrEmpty(seKey))
+            {
+                DialogueAudioManager.Instance?.PlaySE(seKey);
+            }
         }
     }
 }
