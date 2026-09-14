@@ -5,6 +5,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using Runtime.Dialogue.Core;
+using Runtime.Dialogue.Branching;
 
 namespace DialogueSystem.Editor
 {
@@ -86,7 +87,7 @@ namespace DialogueSystem.Editor
                 var newChoice = new ChoiceData
                 {
                     choiceText = "New Choice",
-                    branchType = "DefaultChoice", // 修正: 文字列として初期化
+                    branchType = "DefaultChoiceHandler", // クラス名に統一
                     conditionKey = "",
                     conditionValue = 0
                 };
@@ -126,24 +127,33 @@ namespace DialogueSystem.Editor
             choiceContainer.Add(choiceTextField);
 
             // IDialogueBranchHandlerを継承しているすべてのクラスを自動検知
-            var handlerTypes = UnityEditor.TypeCache.GetTypesDerivedFrom<Runtime.Dialogue.Branching.IDialogueBranchHandler>();
+            var handlerTypes = UnityEditor.TypeCache.GetTypesDerivedFrom<IDialogueBranchHandler>();
 
-            // デフォルトの選択肢 + 検知したクラス名をリスト化
-            List<string> branchOptions = new List<string> { "DefaultChoice", "AutoBranch", "SpecialUI" };
+            // 重複していた旧文字列（DefaultChoice, AutoBranch, SpecialUI）を排除し、実際のクラス名のみをリスト化
+            List<string> branchOptions = new List<string>();
             foreach (var t in handlerTypes)
             {
                 if (!t.IsAbstract && !t.IsInterface && !branchOptions.Contains(t.Name))
                 {
-                    branchOptions.Add(t.Name); // ハンドラーのクラス名をそのまま選択肢に追加
+                    branchOptions.Add(t.Name); // ハンドラーのクラス名のみを追加 (DefaultChoiceHandler 等)
                 }
             }
 
+            // 旧データ（"DefaultChoice"等）が残っていた場合の移行互換サポート
+            if (choice.branchType == "DefaultChoice") choice.branchType = "DefaultChoiceHandler";
+            if (choice.branchType == "AutoBranch") choice.branchType = "AutoBranchHandler";
+
+            // リストが空だった場合のフォールバック
+            if (branchOptions.Count == 0) branchOptions.Add("DefaultChoiceHandler");
+
             // ドロップダウンフィールドを作成
-            string currentValue = branchOptions.Contains(choice.branchType) ? choice.branchType : "DefaultChoice";
+            string currentValue = branchOptions.Contains(choice.branchType) ? choice.branchType : branchOptions[0];
+            choice.branchType = currentValue;
+
             var branchField = new DropdownField(branchOptions, currentValue);
-            branchField.style.width = 110;
+            branchField.style.width = 150;
             branchField.RegisterValueChangedCallback(evt => choice.branchType = evt.newValue);
-            choiceContainer.Add(branchField); // 追加: fieldをUIに登録
+            choiceContainer.Add(branchField);
 
             // 3. Key
             var keyLabel = new Label("Key:");

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq; // 👈 追加: リストの抽出(Where)を使うため
+using System.Linq;
 using UnityEngine;
+using Runtime.Dialogue;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Logic;
 
 namespace Runtime.Dialogue.Branching
 {
-    [HandlerInfo(description: "プレイヤーが画面上のボタンをクリックして選択する、標準的な選択肢を表示します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「DefaultChoice」を指定してください。")]
+    [HandlerInfo(description: "プレイヤーが画面上のボタンをクリックして選択する、標準的な選択肢を表示します。", usage: "ノードエディタ上で、選択肢のBranchTypeに「DefaultChoiceHandler」を指定してください。")]
     public class DefaultChoiceHandler : MonoBehaviour, IDialogueBranchHandler
     {
         public int Priority => 0; // 最低優先度（フォールバック用）
@@ -23,8 +24,24 @@ namespace Runtime.Dialogue.Branching
             var view = DialogueManager.Instance.CurrentView;
             if (view != null)
             {
-                // 👈 修正: AutoBranch等の見えない分岐を除外し、通常のボタン(DefaultChoice)だけを抽出する
-                var displayChoices = choices.Where(c => c.branchType == "DefaultChoice").ToList();
+                // 1. まず branchType で絞り込む
+                var targetChoices = choices.Where(c =>
+                    c.branchType == nameof(DefaultChoiceHandler) ||
+                    c.branchType == "DefaultChoice").ToList();
+
+                if (targetChoices.Count == 0) return false;
+
+                // 2. 追加：FlagManager による条件評価でさらにフィルタリングする
+                var displayChoices = new List<ChoiceData>();
+                foreach (var choice in targetChoices)
+                {
+                    // 条件が設定されていない、または条件を満たしている場合のみ有効とする
+                    if (string.IsNullOrEmpty(choice.conditionKey) ||
+                        (FlagManager.Instance != null && FlagManager.Instance.EvaluateCondition(choice.conditionKey, choice.conditionOperator, choice.conditionValue)))
+                    {
+                        displayChoices.Add(choice);
+                    }
+                }
 
                 // もし画面に出せる選択肢が1つもない場合は、このハンドラーでは処理できないとして false を返す
                 if (displayChoices.Count == 0) return false;

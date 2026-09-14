@@ -1,5 +1,6 @@
 ﻿using Runtime.Dialogue;
 using Runtime.Dialogue.Core;
+using Runtime.Dialogue.Editor;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
@@ -22,8 +23,6 @@ namespace DialogueSystem.Editor
         private Button debugToggleButton;
         private Button forceSampleButton;
         private Label statusLabel;
-
-
 
         [MenuItem("Tools/Dialogue/Dialogue Editor")]
         public static void OpenDialogueEditor()
@@ -201,14 +200,34 @@ namespace DialogueSystem.Editor
             { text = "Save" };
             toolbar.Add(saveButton);
 
-            var eventInfoButton = new Button(() =>
+            // ツールメニュー（旧 Handler Info ボタン）
+            var toolsMenuButton = new Button(() =>
             {
-                // 先ほど作った専用ウィンドウを開く
-                DialogueSystem.Editor.HandlerInfoWindow.ShowWindow();
-            })
-            { text = "Handler Info" };
-            toolbar.Add(eventInfoButton);
+                GenericMenu menu = new GenericMenu();
 
+                // 1. 既存の Handler Info ウィンドウを開く
+                menu.AddItem(new GUIContent("Handler Info"), false, () =>
+                {
+                    DialogueSystem.Editor.HandlerInfoWindow.ShowWindow();
+                });
+
+                // 2. 追加ウィンドウ用のプレースホルダー1
+                menu.AddItem(new GUIContent("FlagManagerWindow"), false, () =>
+                {
+                    FlagManagerWindow.ShowWindow();
+                });
+
+                // 3. 追加ウィンドウ用のプレースホルダー2
+                menu.AddItem(new GUIContent("PortraitCommandBuilderWindow"), false, () =>
+                {
+                    PortraitCommandBuilderWindow.ShowWindow();
+                });
+
+                // マウスカーソルの位置にドロップダウンを表示
+                menu.ShowAsContext();
+            })
+            { text = "Tools ▾" };
+            toolbar.Add(toolsMenuButton);
 
             // ステータスラベル（右端）
             statusLabel = new Label("Status: ready");

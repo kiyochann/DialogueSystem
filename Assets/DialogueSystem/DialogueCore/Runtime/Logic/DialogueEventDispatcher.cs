@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Runtime.Dialogue.Core; // IDialogueCommandHandler がある名前空間を指定
+// using Runtime.Dialogue.Commands; // ※環境によってはこちらも必要
 
 namespace Runtime.Dialogue
 {
@@ -25,6 +27,8 @@ namespace Runtime.Dialogue
         /// </summary>
         public void RegisterHandler(IDialogueCommandHandler handler)
         {
+            if (handler == null || string.IsNullOrEmpty(handler.TargetCommandName)) return;
+
             string key = handler.TargetCommandName.ToLower();
             if (!handlers.ContainsKey(key))
             {
@@ -34,13 +38,19 @@ namespace Runtime.Dialogue
 
         public void ExecuteCommand(DialogueCommand command, Action onComplete)
         {
-            string key = command.CommandName;
+            if (command == null)
+            {
+                onComplete?.Invoke();
+                return;
+            }
+
+            // 【修正】C#の正しいNullチェック構文
+            string key = command.CommandName?.ToLower() ?? string.Empty;
 
             if (handlers.TryGetValue(key, out var handler))
             {
                 handler.Execute(command, () =>
                 {
-                    // ハンドラ側が完了を通知したタイミングでフラグを立てる
                     command.IsExecuted = true;
                     onComplete?.Invoke();
                 });
@@ -55,9 +65,11 @@ namespace Runtime.Dialogue
 
         public void ForceCompleteCommand(DialogueCommand command)
         {
-            if (command.IsExecuted) return;
+            if (command == null || command.IsExecuted) return;
             command.IsExecuted = true;
-            string key = command.CommandName;
+
+            // 【修正】C#の正しいNullチェック構文
+            string key = command.CommandName?.ToLower() ?? string.Empty;
 
             if (handlers.TryGetValue(key, out var handler))
             {

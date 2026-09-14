@@ -23,6 +23,7 @@ namespace Runtime.Dialogue.Plugins.Layouts
 
         private void Start()
         {
+            // ディスパッチャーへ自分自身を登録
             if (DialogueLayoutDispatcher.Instance != null)
             {
                 DialogueLayoutDispatcher.Instance.RegisterHandler(this);

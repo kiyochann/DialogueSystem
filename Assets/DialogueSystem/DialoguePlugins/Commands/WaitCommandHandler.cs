@@ -13,6 +13,9 @@ namespace Runtime.Dialogue.Commands
     {
         public string TargetCommandName => "wait";
 
+        private Coroutine currentWaitRoutine;
+        private Action currentOnComplete;
+
         private void Start()
         {
             if (DialogueEventDispatcher.Instance != null)
@@ -22,19 +25,46 @@ namespace Runtime.Dialogue.Commands
         public void Execute(DialogueCommand command, Action onComplete)
         {
             float duration = command.GetFloat("time", 1.0f);
-            StartCoroutine(WaitRoutine(duration, onComplete));
+            
+            // 既に動いている待機があれば停止してコールバックを消化
+            StopCurrentWait();
+
+            currentOnComplete = onComplete;
+            currentWaitRoutine = StartCoroutine(WaitRoutine(duration));
         }
 
         public void ForceComplete(DialogueCommand command)
         {
-            // スキップされたら待機を即座にやめる
-            StopAllCoroutines();
+            // スキップされたら待機を即座にやめ、未完了だったコールバックを強制実行する
+            if (currentWaitRoutine != null)
+            {
+                StopCoroutine(currentWaitRoutine);
+                currentWaitRoutine = null;
+            }
+
+            var tempCallback = currentOnComplete;
+            currentOnComplete = null;
+            tempCallback?.Invoke();
         }
 
-        private IEnumerator WaitRoutine(float duration, Action onComplete)
+        private IEnumerator WaitRoutine(float duration)
         {
             yield return new WaitForSeconds(duration);
-            onComplete?.Invoke(); // ここでコールバックを呼ぶと、UI側の文字送りが再開される
+            
+            currentWaitRoutine = null;
+            var tempCallback = currentOnComplete;
+            currentOnComplete = null;
+            tempCallback?.Invoke(); // 正常終了時にコールバックを呼ぶ
+        }
+
+        private void StopCurrentWait()
+        {
+            if (currentWaitRoutine != null)
+            {
+                StopCoroutine(currentWaitRoutine);
+                currentWaitRoutine = null;
+            }
+            currentOnComplete = null;
         }
     }
 }
