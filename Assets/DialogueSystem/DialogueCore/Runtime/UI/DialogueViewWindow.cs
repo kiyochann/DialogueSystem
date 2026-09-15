@@ -41,7 +41,6 @@ namespace Runtime.Dialogue
         {
             if (typewriterAudio == null)
             {
-                // 旧API(FindObjectOfType)の非推奨警告を解消するため FindAnyObjectByType を使用
                 typewriterAudio = UnityEngine.Object.FindAnyObjectByType<DialogueTypewriterAudio>();
             }
 
@@ -83,6 +82,12 @@ namespace Runtime.Dialogue
             currentCommands = commands;
             onCompleteCallback = onTypingComplete;
 
+            // 💡 バックログ機能の連携: 会話テキストが表示されるタイミングでログに追加
+            if (DialogueLogManager.Instance != null && !string.IsNullOrWhiteSpace(cleanText))
+            {
+                DialogueLogManager.Instance.AddLog(speakerID, cleanText);
+            }
+
             if (typingCoroutine != null) StopCoroutine(typingCoroutine);
             typingCoroutine = StartCoroutine(TypeTextRoutine());
         }
@@ -100,7 +105,6 @@ namespace Runtime.Dialogue
 
             typewriterAudio?.ResetCounter();
 
-            // 表示するテキストが空（コマンドのみ等）の場合は、音を鳴らさずにコマンドだけ処理して終了
             if (string.IsNullOrWhiteSpace(currentFullText))
             {
                 ExecuteRemainingCommands(false);

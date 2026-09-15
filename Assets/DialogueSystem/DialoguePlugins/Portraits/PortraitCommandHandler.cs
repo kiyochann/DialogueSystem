@@ -5,21 +5,36 @@ using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Logic;
 
 [HandlerInfo(
-    description: @"キャラクターの立ち絵表示・表情変更・消去を行うコマンドハンドラーです。
-スライド移動、フェードイン/アウト、Animator連動モーションに対応しています。",
+    description: @"立ち絵の表示・表情切り替え・移動・フェード演出を行うコマンドハンドラーです。
+スロット枠を固定したまま、キャラクター固有の AnimatorController を動的に割り当ててアニメーション（motion）を発火できます。
 
-    usage: @"【基本パラメータ】
-[portrait:target=キャラクターID, exp=表情ID, pos=配置位置]
+【コンテナ・シーン側の事前準備】
+1. シーン上の立ち絵用 UI スロット（Image）に Animator コンポーネントをアタッチし、StandardUIPortraitHandler の UI Slots に登録しておきます[cite: 1, 4]。
+2. 各 CharacterProfile（ScriptableObject）の animatorController 欄に、キャラ固有の AnimatorController（Triggerを設定したもの）を割り当てます[cite: 1]。
 
-【拡張パラメータ】
-・fade=0.5 (秒数指定でフェード表示/非表示)
-・moveTime=0.3 (秒数指定で位置移動補間)
-・motion=トリガー名 (AnimatorのTriggerを発火)
+【基本パラメータ】
+[portrait:target=キャラID, exp=表情ID, pos=位置ID, fade=秒数, moveTime=秒数, motion=トリガー名]
 
-【使用例】
-・標準表示: [portrait:target=hero,exp=smile,pos=left]
-・演出付き: [portrait:target=hero,exp=smile,pos=left,fade=0.5,motion=nod]
-・立ち絵消去: [portrait:target=clear,pos=left,fade=0.3]"
+【パラメータ解説】
+・target: キャラクターID（clear を指定すると非表示処理）[cite: 4]
+・exp: CharacterProfile に登録した表情ID[cite: 4]
+・pos: 表示するスロット位置（left, center, right 等）[cite: 4]
+・fade: フェードイン/アウトにかける時間（秒）[cite: 4]
+・moveTime: 現在位置からデフォルト位置へ移動完了するまでの時間（秒）[cite: 4]
+・motion: AnimatorController 内で発火させる Trigger 名[cite: 1, 4]",
+
+    usage: @"【使用例】
+・立ち絵の表示（フェード・移動・モーション付き）:
+  [portrait:target=hero,exp=smile,pos=left,fade=0.5,moveTime=0.3,motion=nod]
+
+・表情とモーションのみ変更:
+  [portrait:target=hero,exp=angry,pos=left,motion=shake]
+
+・指定スロットの立ち絵をフェードアウト消去:
+  [portrait:target=clear,pos=left,fade=0.5]
+
+・全スロットの立ち絵を消去:
+  [portrait:target=clear,pos=all,fade=0.5]"
 )]
 public class PortraitCommandHandler : MonoBehaviour, IDialogueCommandHandler
 {
