@@ -7,7 +7,7 @@ using Runtime.Dialogue.Logic;
 namespace Runtime.Dialogue
 {
     /// <summary>
-    /// ‰ï˜bisEƒI[ƒgEƒXƒLƒbƒv“™‚Ìƒ†[ƒU[“ü—Í‚Æ‰¹‰‰oiSEj‚ğ“Š‡‚·‚éƒnƒ“ƒhƒ‰[
+    /// ä¼šè©±é€²è¡Œãƒ»ã‚ªãƒ¼ãƒˆãƒ»ã‚¹ã‚­ãƒƒãƒ—ã®ãƒ¦ãƒ¼ã‚¶ãƒ¼å…¥åŠ›ã¨åŠ¹æœéŸ³ï¼ˆSEï¼‰ã‚’çµ±æ‹¬ã™ã‚‹ãƒãƒ³ãƒ‰ãƒ©ãƒ¼
     /// </summary>
     public class DialogueInputHandler : MonoBehaviour
     {
@@ -17,28 +17,61 @@ namespace Runtime.Dialogue
         [Header("References")]
         [SerializeField] private DialogueViewWindow dialogueView;
 
+        private float startInputCooldown = 0f;
+        private DialogueState prevState = DialogueState.Idle;
+
         private void Awake()
         {
             if (dialogueView == null)
             {
                 dialogueView = UnityEngine.Object.FindAnyObjectByType<DialogueViewWindow>();
             }
+
+            // ä¼šè©±æ™‚ã«æ—¥æœ¬èª(IME)å¤‰æ›ã‚­ãƒ¼æš´ç™ºã‚’é˜²æ­¢
+            Input.imeCompositionMode = IMECompositionMode.Off;
         }
 
         private void Update()
         {
-            if (DialogueManager.Instance == null || DialogueManager.Instance.CurrentState == DialogueState.Idle)
+            if (DialogueManager.Instance == null) return;
+
+            DialogueState currentState = DialogueManager.Instance.CurrentState;
+
+            // ä¼šè©±é–‹å§‹ç›´å¾Œï¼ˆIdle -> ä¼šè©±ä¸­ã¸ã®é·ç§»æ™‚ï¼‰ã«ã‚¯ãƒ¼ãƒ«ãƒ€ã‚¦ãƒ³ã‚’è¨­ã‘ã¦é€£æ‰“ãƒ»æŠ¼ã—ã£ã±ãªã—ã«ã‚ˆã‚‹èª¤é€ã‚Šã‚’é˜²æ­¢
+            if (prevState == DialogueState.Idle && currentState != DialogueState.Idle)
             {
+                startInputCooldown = 0.2f;
+            }
+            prevState = currentState;
+
+            if (currentState == DialogueState.Idle) return;
+
+            if (startInputCooldown > 0f)
+            {
+                startInputCooldown -= Time.deltaTime;
                 return;
             }
 
-            // 1. ‰ï˜b‘—‚èiƒ}ƒEƒXƒNƒŠƒbƒN / SpaceƒL[ / EnterƒL[j
-            bool isMousePressed = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
-            bool isKeyboardPressed = Keyboard.current != null && (Keyboard.current.spaceKey.wasPressedThisFrame || Keyboard.current.enterKey.wasPressedThisFrame);
+            // --- å…¥åŠ›åˆ¤å®š ---
+            // 1. ãƒã‚¦ã‚¹ã‚¯ãƒªãƒƒã‚¯
+            bool isMousePressed = (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                               || Input.GetMouseButtonDown(0);
 
-            if (isMousePressed || isKeyboardPressed)
+            // 2. ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ï¼ˆSpace, Enterï¼‰
+            bool isStandardKeyboard = (Keyboard.current != null && (
+                Keyboard.current.spaceKey.wasPressedThisFrame ||
+                Keyboard.current.enterKey.wasPressedThisFrame
+            ))
+            || Input.GetKeyDown(KeyCode.Space)
+            || Input.GetKeyDown(KeyCode.Return);
+
+            // 3. Fã‚­ãƒ¼ï¼ˆã‚¤ãƒ³ã‚¿ãƒ©ã‚¯ãƒˆã‚­ãƒ¼ã§ã®é€ã‚Šï¼‰
+            bool isFKeyPressed = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+                              || Input.GetKeyDown(KeyCode.F);
+
+            if (isMousePressed || isStandardKeyboard || isFKeyPressed)
             {
-                // ‘I‘ğˆ‚ª•\¦‚³‚ê‚Ä‚¢‚éŠÔ‚¾‚¯AUIã‚ÌƒNƒŠƒbƒNiƒ{ƒ^ƒ“‘I‘ğ“™j‚ğŒë”­“®–h~‚Ì‚½‚ßƒK[ƒh‚·‚é
+                // é¸æŠè‚¢ãŒè¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹é–“ã¯ã€UIã¸ã®ã‚¯ãƒªãƒƒã‚¯èª¤çˆ†ã‚’é˜²ããŸã‚ã‚¬ãƒ¼ãƒ‰
                 if (isMousePressed && dialogueView != null && dialogueView.IsShowingChoices)
                 {
                     if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(PointerInputModule.kMouseLeftId))
@@ -50,30 +83,30 @@ namespace Runtime.Dialogue
                 HandleAdvance();
             }
 
-            // 2. ƒI[ƒgƒ‚[ƒhØ‚è‘Ö‚¦iAƒL[j
-            if (Keyboard.current != null && Keyboard.current.aKey.wasPressedThisFrame)
+            // 4. ã‚ªãƒ¼ãƒˆãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆï¼ˆAã‚­ãƒ¼ï¼‰
+            if ((Keyboard.current != null && Keyboard.current.aKey.wasPressedThisFrame) || Input.GetKeyDown(KeyCode.A))
             {
                 DialogueManager.Instance.ToggleAutoMode();
             }
 
-            // 3. ƒXƒLƒbƒvƒ‚[ƒhØ‚è‘Ö‚¦iSƒL[j
-            if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
+            // 5. ã‚¹ã‚­ãƒƒãƒ—ãƒ¢ãƒ¼ãƒ‰åˆ‡ã‚Šæ›¿ãˆï¼ˆSã‚­ãƒ¼ï¼‰
+            if ((Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame) || Input.GetKeyDown(KeyCode.S))
             {
                 DialogueManager.Instance.ToggleSkipMode();
             }
         }
 
         /// <summary>
-        /// ‰ï˜b‚ğŸ‚Éi‚ß‚éiŒˆ’è‰¹‚ğ—¬‚µ‚ÄManager‚ğŒÄ‚Ño‚·j
+        /// ä¼šè©±ã‚’æ¬¡ã«é€²ã‚ã‚‹ï¼ˆåŠ¹æœéŸ³ã‚’é³´ã‚‰ã—Managerã‚’å‘¼ã³å‡ºã—ï¼‰
         /// </summary>
         public void HandleAdvance()
         {
             if (dialogueView != null && dialogueView.IsShowingChoices) return;
 
-            // ‰ï˜b‘—‚è‰¹‚ğÄ¶
+            // ä¼šè©±é€ã‚ŠSEå†ç”Ÿ
             DialogueAudioManager.Instance?.PlaySE(nextPageSEKey);
 
-            // DialogueManager‚Öis’Ê’m
+            // DialogueManagerã¸é€²è¡Œé€šçŸ¥
             DialogueManager.Instance?.HandleAdvanceInput();
         }
     }

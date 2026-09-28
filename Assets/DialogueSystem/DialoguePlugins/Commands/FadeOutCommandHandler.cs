@@ -1,4 +1,4 @@
-﻿using Runtime.Dialogue.Core;
+using Runtime.Dialogue.Core;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -63,17 +63,20 @@ namespace Runtime.Dialogue.Commands
                 yield break;
             }
 
-            fadePanel.gameObject.SetActive(true);
+            // 表示前に alpha = 0f (完全透明) に設定して徐々に暗転させる
             Color color = fadePanel.color;
-            float timer = 0f;
+            color.a = 0f;
+            fadePanel.color = color;
 
-            // duration秒かけてAlphaを0から1へ
+            fadePanel.gameObject.SetActive(true);
+
+            float timer = 0f;
             while (timer < duration)
             {
                 timer += Time.deltaTime;
                 color.a = Mathf.Clamp01(timer / duration);
                 fadePanel.color = color;
-                yield return null; // 1フレーム待機
+                yield return null;
             }
 
             color.a = 1f;

@@ -10,30 +10,30 @@ namespace Runtime.Dialogue.Plugins.Commands
     [Serializable]
     public class DirectTargetMapping
     {
-        [Tooltip("ƒ^ƒO‚Åw’è‚·‚é¯•ÊIDi—á: CameraManager, SoundManagerj")]
+        [Tooltip("ã‚¿ã‚°ã§æŒ‡å®šã™ã‚‹è­˜åˆ¥IDï¼ˆä¾‹: CameraManager, SoundManagerï¼‰")]
         public string targetID;
-        [Tooltip("‘ÎÛ‚ÌGameObject")]
+        [Tooltip("å¯¾è±¡ã®GameObject")]
         public GameObject targetObject;
     }
 
     [HandlerInfo(
-    description: @"”CˆÓ‚ÌƒIƒuƒWƒFƒNƒg‚ÉƒAƒ^ƒbƒ`‚³‚ê‚½ƒXƒNƒŠƒvƒg‚Ìƒƒ\ƒbƒh‚ğA_“î‚Èw’è•û®iÅ‹ßÚEƒJƒXƒ^ƒ€ƒ^ƒOEƒCƒ“ƒXƒyƒNƒ^[“o˜^j‚Å“®“I‚ÉŒÄ‚Ño‚·ƒRƒ}ƒ“ƒhƒnƒ“ƒhƒ‰[‚Å‚·[cite: 5]B",
-    usage: @"yŠî–{ƒpƒ‰ƒ[ƒ^z
-[call:mode=•û®, script=ƒXƒNƒŠƒvƒg–¼, method=ƒƒ\ƒbƒh–¼, arg=ˆø”]
+    description: @"ä»»æ„ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã«ã‚¢ã‚¿ãƒƒãƒã•ã‚ŒãŸã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ãƒ¡ã‚½ãƒƒãƒ‰ã‚’ã€æŸ”è»ŸãªæŒ‡å®šæ–¹å¼ï¼ˆæœ€è¿‘æ¥ãƒ»ã‚«ã‚¹ã‚¿ãƒ ã‚¿ã‚°ãƒ»ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼ç™»éŒ²ï¼‰ã§å‹•çš„ã«å‘¼ã³å‡ºã™ã‚³ãƒãƒ³ãƒ‰ãƒãƒ³ãƒ‰ãƒ©ãƒ¼ã§ã™[cite: 5]ã€‚",
+    usage: @"ã€åŸºæœ¬ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã€‘
+[call:mode=æ–¹å¼, script=ã‚¹ã‚¯ãƒªãƒ—ãƒˆå, method=ãƒ¡ã‚½ãƒƒãƒ‰å, arg=å¼•æ•°]
 
-yg—p—áz
-EÅ‚à‹ß‚¢“G‚ğUŒ‚: [call:mode=nearest,script=EnemyController,method=Attack]
-EƒJƒXƒ^ƒ€ƒ^ƒO‚Åw’è: [call:mode=tag,tag=Boss,method=PlayAnim,arg=Roar][cite: 5]
-EƒCƒ“ƒXƒyƒNƒ^[“o˜^‚©‚çw’è: [call:mode=direct,target=CameraRig,script=CameraShake,method=Shake][cite: 5]"
+ã€ä½¿ç”¨ä¾‹ã€‘
+ãƒ»æœ€ã‚‚è¿‘ã„æ•µã‚’æ”»æ’ƒ: [call:mode=nearest,script=EnemyController,method=Attack]
+ãƒ»ã‚«ã‚¹ã‚¿ãƒ ã‚¿ã‚°ã§æŒ‡å®š: [call:mode=tag,tag=Boss,method=PlayAnim,arg=Roar][cite: 5]
+ãƒ»ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼ç™»éŒ²ã‹ã‚‰æŒ‡å®š: [call:mode=direct,target=CameraRig,script=CameraShake,method=Shake][cite: 5]"
 )]
     public class GenericCallCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
         public string TargetCommandName => "call";
 
-        [Header("w’è•û®3—p: Inspector“o˜^ƒŠƒXƒg")]
+        [Header("æŒ‡å®šæ–¹å¼3ç”¨: Inspectorç™»éŒ²ãƒªã‚¹ãƒˆ")]
         [SerializeField] private List<DirectTargetMapping> directTargets = new List<DirectTargetMapping>();
 
-        [Header("w’è•û®1—p: ‹——£”»’è‚ÌŠî€ˆÊ’ui‹ó‚È‚çCamera.main‚ğg—pj")]
+        [Header("æŒ‡å®šæ–¹å¼1ç”¨: è·é›¢åˆ¤å®šã®åŸºæº–ä½ç½®ï¼ˆç©ºãªã‚‰Camera.mainã‚’ä½¿ç”¨ï¼‰")]
         [SerializeField] private Transform referenceTransform;
 
         private void Start()
@@ -60,16 +60,16 @@ namespace Runtime.Dialogue.Plugins.Commands
 
             switch (mode)
             {
-                case "nearest": // 1. w’èƒXƒNƒŠƒvƒg‚ğ‚Â’†‚ÅuÅ‚à‹ß‚¢vƒIƒuƒWƒFƒNƒg
+                case "nearest": // 1. æŒ‡å®šã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’æŒã¤ä¸­ã§ã€Œæœ€ã‚‚è¿‘ã„ã€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
                     targetObj = FindNearestObjectWithScript(scriptName);
                     break;
 
-                case "tag": // 2. ©‘Oƒ^ƒOiDialogueCustomTagj‚Åw’è
+                case "tag": // 2. è‡ªå‰ã‚¿ã‚°ï¼ˆDialogueCustomTagï¼‰ã§æŒ‡å®š
                     string customTag = command.GetString("tag", "");
                     targetObj = FindObjectByCustomTag(customTag);
                     break;
 
-                case "direct": // 3. Inspector“o˜^‚©‚çw’è
+                case "direct": // 3. Inspectorç™»éŒ²ã‹ã‚‰æŒ‡å®š
                 default:
                     string targetID = command.GetString("target", "");
                     var mapping = directTargets.Find(t => t.targetID.Equals(targetID, StringComparison.OrdinalIgnoreCase));
@@ -83,20 +83,19 @@ namespace Runtime.Dialogue.Plugins.Commands
             }
             else
             {
-                Debug.LogWarning($"[GenericCall] ‘ÎÛƒIƒuƒWƒFƒNƒg‚Ü‚½‚Íƒƒ\ƒbƒh‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ (Mode: {mode})");
+                Debug.LogWarning($"[GenericCall] å¯¾è±¡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¾ãŸã¯ãƒ¡ã‚½ãƒƒãƒ‰ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ (Mode: {mode})");
             }
 
             onComplete?.Invoke();
         }
 
-        // •û®1: ƒAƒZƒ“ƒuƒŠQÆ‚É¶‰E‚³‚ê‚È‚¢ˆÀ‘S‚ÈƒIƒuƒWƒFƒNƒgæ“¾
+        // æ–¹å¼1: ã‚¢ã‚»ãƒ³ãƒ–ãƒªå‚ç…§ã«å·¦å³ã•ã‚Œãªã„å®‰å…¨ãªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå–å¾—
         private GameObject FindNearestObjectWithScript(string scriptName)
         {
             if (referenceTransform == null || string.IsNullOrEmpty(scriptName)) return null;
 
-#pragma warning disable CS0618
-            var allMonoBehaviours = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
-#pragma warning restore CS0618
+            // Unity 6 å¯¾å¿œ: FindObjectsByType ä½¿ç”¨
+            var allMonoBehaviours = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
 
             GameObject nearestObj = null;
             float minDistance = float.MaxValue;
@@ -119,14 +118,13 @@ namespace Runtime.Dialogue.Plugins.Commands
             return nearestObj;
         }
 
-        // •û®2: ƒAƒZƒ“ƒuƒŠQÆ‚É¶‰E‚³‚ê‚È‚¢ˆÀ‘S‚Èƒ^ƒOŒŸõ
+        // æ–¹å¼2: ã‚¢ã‚»ãƒ³ãƒ–ãƒªå‚ç…§ã«å·¦å³ã•ã‚Œãªã„å®‰å…¨ãªã‚¿ã‚°æ¤œç´¢
         private GameObject FindObjectByCustomTag(string tag)
         {
             if (string.IsNullOrEmpty(tag)) return null;
 
-#pragma warning disable CS0618
-            var tags = UnityEngine.Object.FindObjectsOfType<DialogueCustomTag>();
-#pragma warning restore CS0618
+            // Unity 6 å¯¾å¿œ: FindObjectsByType ä½¿ç”¨
+            var tags = UnityEngine.Object.FindObjectsByType<DialogueCustomTag>(FindObjectsSortMode.None);
 
             foreach (var t in tags)
             {

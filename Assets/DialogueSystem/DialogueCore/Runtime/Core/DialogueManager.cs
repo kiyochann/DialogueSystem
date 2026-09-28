@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Runtime.Dialogue.Core;
@@ -38,14 +38,28 @@ namespace Runtime.Dialogue.Logic
         public bool IsAutoMode => isAutoMode;
         private Coroutine autoWaitCoroutine;
 
-        // 👇追加: スキップ機能用の変数
         private bool isSkipMode = false;
         public bool IsSkipMode => isSkipMode;
+
+        // 外部入力待ち（方向選択・演出等）フラグ
+        private bool isWaitingExternalInput = false;
+        public bool IsWaitingExternalInput => isWaitingExternalInput;
 
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
+        }
+
+        // 外部入力待ちのロック/解除
+        public void SetExternalInputLock(bool locked)
+        {
+            isWaitingExternalInput = locked;
+            if (locked)
+            {
+                DisableAutoMode();
+                DisableSkipMode();
+            }
         }
 
         public void Initialize(IDialogueView view)
@@ -140,19 +154,21 @@ namespace Runtime.Dialogue.Logic
                 {
                     CurrentState = DialogueState.WaitingForAdvance;
 
-                    // 👇 スキップ中なら即座に次へ、オート中なら待機
-                    if (isSkipMode)
+                    // 外部入力待ち中でない場合のみオート/スキップを進行させる
+                    if (!isWaitingExternalInput)
                     {
-                        StartCoroutine(SkipAdvanceRoutine());
-                    }
-                    else if (isAutoMode)
-                    {
-                        StartAutoWait(cleanText.Length);
+                        if (isSkipMode)
+                        {
+                            StartCoroutine(SkipAdvanceRoutine());
+                        }
+                        else if (isAutoMode)
+                        {
+                            StartAutoWait(cleanText.Length);
+                        }
                     }
                 }
             });
 
-            // 👇 追加: スキップ中なら、文字表示アニメーションを即座に強制完了させる
             if (isSkipMode && CurrentState == DialogueState.Playing)
             {
                 CurrentView?.ForceCompleteTyping();
@@ -161,27 +177,30 @@ namespace Runtime.Dialogue.Logic
 
         public void HandleAdvanceInput()
         {
-            // 1. 手動入力が来たらオートとスキップを解除する
+            // 外部入力待ち状態のときは進行入力を完全に無視する
+            if (isWaitingExternalInput)
+            {
+                return;
+            }
+
             if (autoWaitCoroutine != null)
             {
                 StopCoroutine(autoWaitCoroutine);
                 autoWaitCoroutine = null;
             }
             DisableAutoMode();
-            DisableSkipMode(); // 👈 追加
+            DisableSkipMode();
 
-            // 2. 状態に応じた進行処理
             if (CurrentState == DialogueState.Playing)
             {
                 CurrentView?.ForceCompleteTyping();
             }
             else if (CurrentState == DialogueState.WaitingForAdvance)
             {
-                AdvanceToNextNode(); // 👈 スッキリさせるためにメソッド化
+                AdvanceToNextNode();
             }
         }
 
-        // 👇 追加: 次のノードへ進む処理を独立させたメソッド
         private void AdvanceToNextNode()
         {
             if (!string.IsNullOrEmpty(currentNode.nextNodeID))
@@ -194,7 +213,7 @@ namespace Runtime.Dialogue.Logic
             }
         }
 
-        private void EndDialogue()
+        public void EndDialogue()
         {
             CurrentState = DialogueState.Ended;
             CurrentView?.CloseView();
@@ -205,20 +224,22 @@ namespace Runtime.Dialogue.Logic
 
             CurrentState = DialogueState.Idle;
 
-            // 会話が終わったら念のためモードをオフに
+            // 会話が終わったらモードをオフにし、外部入力ロックも解除
             isAutoMode = false;
             isSkipMode = false;
+            isWaitingExternalInput = false;
         }
 
         // --- Auto Mode ---
         public void ToggleAutoMode()
         {
+            if (isWaitingExternalInput) return;
+
             isAutoMode = !isAutoMode;
-            Debug.Log($"Auto Mode toggled: {isAutoMode}");
 
             if (isAutoMode)
             {
-                DisableSkipMode(); // オートとスキップは排他
+                DisableSkipMode();
 
                 if (CurrentState == DialogueState.WaitingForAdvance)
                 {
@@ -234,11 +255,7 @@ namespace Runtime.Dialogue.Logic
 
         public void DisableAutoMode()
         {
-            if (isAutoMode)
-            {
-                isAutoMode = false;
-                Debug.Log("Auto Mode disabled.");
-            }
+            if (isAutoMode) isAutoMode = false;
         }
 
         private void StartAutoWait(int textLength)
@@ -252,18 +269,22 @@ namespace Runtime.Dialogue.Logic
         {
             yield return new WaitForSeconds(waitTime);
             autoWaitCoroutine = null;
-            AdvanceToNextNode(); // 👈 自動進行用
+            if (!isWaitingExternalInput)
+            {
+                AdvanceToNextNode();
+            }
         }
 
-        // --- Skip Mode (👇 今回追加) ---
+        // --- Skip Mode ---
         public void ToggleSkipMode()
         {
+            if (isWaitingExternalInput) return;
+
             isSkipMode = !isSkipMode;
-            Debug.Log($"Skip Mode toggled: {isSkipMode}");
 
             if (isSkipMode)
             {
-                DisableAutoMode(); // オートとスキップは排他
+                DisableAutoMode();
 
                 if (CurrentState == DialogueState.Playing)
                 {
@@ -278,19 +299,14 @@ namespace Runtime.Dialogue.Logic
 
         public void DisableSkipMode()
         {
-            if (isSkipMode)
-            {
-                isSkipMode = false;
-                Debug.Log("Skip Mode disabled.");
-            }
+            if (isSkipMode) isSkipMode = false;
         }
 
         private System.Collections.IEnumerator SkipAdvanceRoutine()
         {
-            // プログラムが一瞬でループしすぎてフリーズ（スタックオーバーフロー）するのを防ぐため、必ず1フレーム待つ
             yield return null;
 
-            if (isSkipMode && CurrentState == DialogueState.WaitingForAdvance)
+            if (isSkipMode && CurrentState == DialogueState.WaitingForAdvance && !isWaitingExternalInput)
             {
                 AdvanceToNextNode();
             }
