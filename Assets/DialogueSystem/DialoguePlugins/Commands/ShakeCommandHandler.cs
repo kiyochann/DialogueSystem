@@ -38,8 +38,14 @@ namespace Runtime.Dialogue.Commands
             if (targetStr == "window" || targetStr == "both")
             {
                 var view = UnityEngine.Object.FindObjectOfType<DialogueViewWindow>();
-                if (view != null && view.windowRoot != null)
-                    targetTrans = view.windowRoot.transform;
+                if (view != null)
+                {
+                    // windowRoot が設定されていればそれを使い、無ければビュー自身のTransformを使用
+                    if (view.windowRoot != null)
+                        targetTrans = view.windowRoot.transform;
+                    else
+                        targetTrans = view.transform;
+                }
             }
             if (targetStr == "canvas" || targetStr == "both")
             {
@@ -73,10 +79,19 @@ namespace Runtime.Dialogue.Commands
             }
             // 変形をリセット
             var view = UnityEngine.Object.FindObjectOfType<DialogueViewWindow>();
-            if (view != null && view.windowRoot != null)
+            if (view != null)
             {
-                view.windowRoot.transform.localPosition = Vector3.zero;
-                view.windowRoot.transform.localRotation = Quaternion.identity;
+                // windowRoot があればそれをリセット、無ければビュー自身をリセット
+                if (view.windowRoot != null)
+                {
+                    view.windowRoot.transform.localPosition = Vector3.zero;
+                    view.windowRoot.transform.localRotation = Quaternion.identity;
+                }
+                else
+                {
+                    view.transform.localPosition = Vector3.zero;
+                    view.transform.localRotation = Quaternion.identity;
+                }
             }
         }
 
