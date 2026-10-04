@@ -105,7 +105,7 @@ namespace Runtime.Dialogue.Commands
             {
                 elapsed += Time.deltaTime;
                 float percent = elapsed / duration;
-                float damper = 1f - Mathf.Clamp01(percent * 4f); // 減衰
+                float damper = 1f - percent; // 減衰（時間経過とともに0へ）
 
                 float x = 0f, y = 0f, z = 0f;
                 if (mode.Contains("pos") || mode == "both")
