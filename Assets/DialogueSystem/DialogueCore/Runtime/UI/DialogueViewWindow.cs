@@ -13,7 +13,7 @@ namespace Runtime.Dialogue
     public class DialogueViewWindow : MonoBehaviour, IDialogueView
     {
         [Header("UI References")]
-        [SerializeField] private GameObject windowRoot;
+        [SerializeField] public GameObject windowRoot;
         [SerializeField] private TextMeshProUGUI nameText;
         [SerializeField] private TextMeshProUGUI bodyText;
         [SerializeField] private Transform choiceButtonParent;
