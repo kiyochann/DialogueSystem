@@ -8,6 +8,7 @@ namespace Runtime.Dialogue
 {
     /// <summary>
     /// 会話進行・オート・スキップのユーザー入力と効果音（SE）を統括するハンドラー
+    /// (New Input System に対応)
     /// </summary>
     public class DialogueInputHandler : MonoBehaviour
     {
@@ -26,9 +27,6 @@ namespace Runtime.Dialogue
             {
                 dialogueView = UnityEngine.Object.FindAnyObjectByType<DialogueViewWindow>();
             }
-
-            // 会話時に日本語(IME)変換キー暴発を防止
-            Input.imeCompositionMode = IMECompositionMode.Off;
         }
 
         private void Update()
@@ -52,22 +50,19 @@ namespace Runtime.Dialogue
                 return;
             }
 
-            // --- 入力判定 ---
+            // --- 入力判定 (New Input System) ---
             // 1. マウスクリック
-            bool isMousePressed = (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-                               || Input.GetMouseButtonDown(0);
+            bool isMousePressed = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
 
-            // 2. キーボード（Space, Enter）
-            bool isStandardKeyboard = (Keyboard.current != null && (
+            // 2. キーボード（Space, Enter, テンキーEnter）
+            bool isStandardKeyboard = Keyboard.current != null && (
                 Keyboard.current.spaceKey.wasPressedThisFrame ||
-                Keyboard.current.enterKey.wasPressedThisFrame
-            ))
-            || Input.GetKeyDown(KeyCode.Space)
-            || Input.GetKeyDown(KeyCode.Return);
+                Keyboard.current.enterKey.wasPressedThisFrame ||
+                Keyboard.current.numpadEnterKey.wasPressedThisFrame
+            );
 
             // 3. Fキー（インタラクトキーでの送り）
-            bool isFKeyPressed = (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
-                              || Input.GetKeyDown(KeyCode.F);
+            bool isFKeyPressed = Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame;
 
             if (isMousePressed || isStandardKeyboard || isFKeyPressed)
             {
@@ -84,13 +79,13 @@ namespace Runtime.Dialogue
             }
 
             // 4. オートモード切り替え（Aキー）
-            if ((Keyboard.current != null && Keyboard.current.aKey.wasPressedThisFrame) || Input.GetKeyDown(KeyCode.A))
+            if (Keyboard.current != null && Keyboard.current.aKey.wasPressedThisFrame)
             {
                 DialogueManager.Instance.ToggleAutoMode();
             }
 
             // 5. スキップモード切り替え（Sキー）
-            if ((Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame) || Input.GetKeyDown(KeyCode.S))
+            if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
             {
                 DialogueManager.Instance.ToggleSkipMode();
             }

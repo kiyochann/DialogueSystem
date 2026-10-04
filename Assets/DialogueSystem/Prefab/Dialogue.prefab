@@ -425,6 +425,7 @@ GameObject:
   - component: {fileID: 241339757381336749}
   - component: {fileID: 4685606914188458660}
   - component: {fileID: 8469455074365621582}
+  - component: {fileID: 2057816325404785628}
   m_Layer: 0
   m_Name: LayoutHandlers
   m_TagString: Untagged
@@ -506,6 +507,24 @@ MonoBehaviour:
   spriteMappings:
   - key: 1
     sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+--- !u!114 &2057816325404785628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2714832708699071896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5678a8098774a35a80e58d90add8d14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Layouts.PrefabLayoutHandler
+  priority: 10
+  frameMountParent: {fileID: 0}
+  defaultFrameRoot: {fileID: 0}
+  replaceMode: 0
+  textRectTransform: {fileID: 0}
+  prefabMappings: []
 --- !u!1 &3005989643931344943
 GameObject:
   m_ObjectHideFlags: 0

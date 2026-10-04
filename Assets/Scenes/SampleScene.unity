@@ -635,6 +635,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2057816325404785628, guid: 5d41256e64d3d6a408092c52c4419709, type: 3}
+      propertyPath: prefabMappings.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2057816325404785628, guid: 5d41256e64d3d6a408092c52c4419709, type: 3}
+      propertyPath: prefabMappings.Array.data[0].hideDefaultFrame
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2057816325404785628, guid: 5d41256e64d3d6a408092c52c4419709, type: 3}
+      propertyPath: prefabMappings.Array.data[0].overrideTextRect
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7807668273551901627, guid: 5d41256e64d3d6a408092c52c4419709, type: 3}
       propertyPath: m_Name
       value: Dialogue
