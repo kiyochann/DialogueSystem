@@ -21,13 +21,18 @@ namespace Runtime.Dialogue.Editor
         private string customCharacterID = "";
         private string customPosition = "center";
 
+        // トランジション用パラメータ
+        private float fadeTime = 0f;
+        private float moveTime = 0f;
+        private string motionTrigger = "";
+
         private bool isManualMode = false;
 
         [MenuItem("Tools/Dialogue/Portrait Command Builder")]
         public static void ShowWindow()
         {
             var window = GetWindow<PortraitCommandBuilderWindow>("Portrait Builder");
-            window.minSize = new Vector2(350, 300);
+            window.minSize = new Vector2(380, 420);
         }
 
         private void OnEnable()
@@ -56,6 +61,11 @@ namespace Runtime.Dialogue.Editor
             {
                 // 全消去モード
                 GUILayout.Label("画面上のすべての立ち絵を非表示にします。", EditorStyles.wordWrappedLabel);
+                
+                // ClearAllでもフェード時間は指定できるようにする
+                GUILayout.Space(5);
+                EditorGUILayout.LabelField("トランジション設定", EditorStyles.boldLabel);
+                fadeTime = EditorGUILayout.FloatField("フェード時間 (秒)", fadeTime);
             }
             else if (currentMode == BuilderMode.ClearSingle)
             {
@@ -78,6 +88,10 @@ namespace Runtime.Dialogue.Editor
                     customPosition = EditorGUILayout.TextField("消去する位置 (pos)", customPosition);
                     finalPos = customPosition;
                 }
+
+                GUILayout.Space(5);
+                EditorGUILayout.LabelField("トランジション設定", EditorStyles.boldLabel);
+                fadeTime = EditorGUILayout.FloatField("フェード時間 (秒)", fadeTime);
             }
             else
             {
@@ -123,6 +137,13 @@ namespace Runtime.Dialogue.Editor
                     finalPos = customPosition;
                 }
                 manualExpression = finalExp;
+
+                // トランジション設定
+                GUILayout.Space(10);
+                EditorGUILayout.LabelField("トランジション設定", EditorStyles.boldLabel);
+                fadeTime = EditorGUILayout.FloatField("フェードイン時間 (秒)", fadeTime);
+                moveTime = EditorGUILayout.FloatField("移動時間 (秒)", moveTime);
+                motionTrigger = EditorGUILayout.TextField("モーショントリガー", motionTrigger);
             }
 
             EditorGUILayout.EndVertical();
@@ -136,13 +157,21 @@ namespace Runtime.Dialogue.Editor
             switch (currentMode)
             {
                 case BuilderMode.Normal:
-                    generatedCommand = $"[portrait:target={finalTarget},exp={finalExp},pos={finalPos}]";
+                    generatedCommand = $"[portrait:target={finalTarget},exp={finalExp},pos={finalPos}";
+                    if (fadeTime > 0f) generatedCommand += $",fade={fadeTime}";
+                    if (moveTime > 0f) generatedCommand += $",moveTime={moveTime}";
+                    if (!string.IsNullOrEmpty(motionTrigger)) generatedCommand += $",motion={motionTrigger}";
+                    generatedCommand += "]";
                     break;
                 case BuilderMode.ClearAll:
-                    generatedCommand = "[portrait:target=clear,pos=all]";
+                    generatedCommand = "[portrait:target=clear,pos=all";
+                    if (fadeTime > 0f) generatedCommand += $",fade={fadeTime}";
+                    generatedCommand += "]";
                     break;
                 case BuilderMode.ClearSingle:
-                    generatedCommand = $"[portrait:target=clear,pos={finalPos}]";
+                    generatedCommand = $"[portrait:target=clear,pos={finalPos}";
+                    if (fadeTime > 0f) generatedCommand += $",fade={fadeTime}";
+                    generatedCommand += "]";
                     break;
             }
 
@@ -153,8 +182,17 @@ namespace Runtime.Dialogue.Editor
             GUI.backgroundColor = new Color(0.6f, 0.9f, 0.6f);
             if (GUILayout.Button("📋 コマンドをクリップボードにコピー", GUILayout.Height(35)))
             {
-                if ((currentMode == BuilderMode.Normal && (string.IsNullOrEmpty(finalTarget) || string.IsNullOrEmpty(finalPos))) ||
-                    (currentMode == BuilderMode.ClearSingle && string.IsNullOrEmpty(finalPos)))
+                bool valid = true;
+                if (currentMode == BuilderMode.Normal && (string.IsNullOrEmpty(finalTarget) || string.IsNullOrEmpty(finalPos)))
+                {
+                    valid = false;
+                }
+                else if (currentMode == BuilderMode.ClearSingle && string.IsNullOrEmpty(finalPos))
+                {
+                    valid = false;
+                }
+
+                if (!valid)
                 {
                     Debug.LogWarning("必要な項目が入力されていません。");
                 }
