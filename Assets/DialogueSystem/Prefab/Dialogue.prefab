@@ -1161,6 +1161,8 @@ GameObject:
   - component: {fileID: 9134258477482732261}
   - component: {fileID: 8949256424838514155}
   - component: {fileID: 8933680894215925928}
+  - component: {fileID: 8388730323635852854}
+  - component: {fileID: 1474480079271010582}
   m_Layer: 0
   m_Name: CommandHandlers
   m_TagString: Untagged
@@ -1397,6 +1399,33 @@ MonoBehaviour:
   autoFadeInTime: 0.5
   autoFadeOutOnEnd: 1
   autoFadeOutTime: 0.5
+--- !u!114 &8388730323635852854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4972252349651462805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7829021745410b0428ce33c4b874c866, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.ShakeCommandHandler
+  _canvasGroups:
+  - {fileID: 1939402162261886066}
+--- !u!114 &1474480079271010582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4972252349651462805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ebcfeccb980a0a4b9078172fb30aaaf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Commands.EndDialogueCommandHandler
+  dialogueCanvasGroup: {fileID: 1939402162261886066}
 --- !u!1 &5067534651970326989
 GameObject:
   m_ObjectHideFlags: 0

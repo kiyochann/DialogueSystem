@@ -104,7 +104,31 @@ MonoBehaviour:
       conditionKey: Gold
       conditionOperator: 4
       conditionValue: 1
-  - graphPosition: {x: -96.8, y: 100}
+  - graphPosition: {x: 3109.6, y: 252}
+    nextNodeID: Node_14f71
+    nodeID: Node_d3c0b
+    speakerName: cfae
+    dialogueText: b
+    choices: []
+  - graphPosition: {x: 3434.4, y: 547.2}
+    nextNodeID: 
+    nodeID: Node_14f71
+    speakerName: 
+    dialogueText: '[end_dialogue:fade=0.5]'
+    choices: []
+  - graphPosition: {x: 626.4, y: 440.8}
+    nextNodeID: Node_14f71
+    nodeID: Node_1bac8
+    speakerName: afcsed
+    dialogueText: '[portrait:target=clear,pos=all]'
+    choices: []
+  - graphPosition: {x: 455.2, y: 255.20001}
+    nextNodeID: Node_6c183
+    nodeID: Node_eb56f
+    speakerName: bbb
+    dialogueText: '[portrait:target=hero,exp=smile,pos=R,fade=0.5,motion=nod]'
+    choices: []
+  - graphPosition: {x: -764.8, y: 100}
     nextNodeID: 
     nodeID: Node_60c34
     speakerName: "\u304D\u306A\u3053\u3055\u3093"
@@ -134,39 +158,51 @@ MonoBehaviour:
       conditionKey: 
       conditionOperator: 0
       conditionValue: 0
-    - choiceText: New Choice
+    - choiceText: d
       targetNodeID: Node_74e5f
       branchType: DefaultChoiceHandler
       conditionKey: 
       conditionOperator: 0
       conditionValue: 0
-  - graphPosition: {x: 3109.6, y: 252}
-    nextNodeID: Node_14f71
-    nodeID: Node_d3c0b
-    speakerName: cfae
-    dialogueText: b
-    choices: []
-  - graphPosition: {x: 3434.4, y: 547.2}
-    nextNodeID: 
-    nodeID: Node_14f71
-    speakerName: 
-    dialogueText: '[dialogue_fade:type=out,time=1.0]'
-    choices: []
-  - graphPosition: {x: 626.4, y: 440.8}
-    nextNodeID: Node_14f71
-    nodeID: Node_1bac8
-    speakerName: afcsed
-    dialogueText: '[portrait:target=clear,pos=all]'
-    choices: []
+    - choiceText: e
+      targetNodeID: Node_4eff8
+      branchType: DefaultChoiceHandler
+      conditionKey: 
+      conditionOperator: 0
+      conditionValue: 0
+    - choiceText: f
+      targetNodeID: Node_06c1c
+      branchType: DefaultChoiceHandler
+      conditionKey: 
+      conditionOperator: 0
+      conditionValue: 0
   - graphPosition: {x: 626.4, y: 616}
     nextNodeID: Node_14f71
     nodeID: Node_74e5f
     speakerName: aefcaef
     dialogueText: '[portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L][portrait:target=hero,exp=smile,pos=L]'
     choices: []
-  - graphPosition: {x: 455.2, y: 255.20001}
-    nextNodeID: Node_6c183
-    nodeID: Node_eb56f
-    speakerName: bbb
-    dialogueText: '[portrait:target=hero,exp=smile,pos=R,fade=0.5,motion=nod]'
+  - graphPosition: {x: 626.4, y: 823.2}
+    nextNodeID: Node_14f71
+    nodeID: Node_4eff8
+    speakerName: shake
+    dialogueText: '[shake:target=canvas,magnitude=50,time=0.5,mode=both]'
+    choices: []
+  - graphPosition: {x: 626.4, y: 1018.4}
+    nextNodeID: Node_c27aa
+    nodeID: Node_06c1c
+    speakerName: "\u30A2\u30CB\u30E1\u30FC\u30B7\u30E7\u30F3"
+    dialogueText: '[portrait:target=clear,pos=L,fade=1][portrait:target=hero,exp=smile,pos=L,fade=2]'
+    choices: []
+  - graphPosition: {x: 1311.2, y: 1018.4}
+    nextNodeID: Node_635a0
+    nodeID: Node_c27aa
+    speakerName: "\u30A2\u30CB\u30E1\u30FC\u30B7\u30E7\u30F3"
+    dialogueText: '[portrait:target=clear,pos=L,fade=1][portrait:target=hero,exp=smile,pos=R,fade=2]'
+    choices: []
+  - graphPosition: {x: 1946.4, y: 1018.4}
+    nextNodeID: Node_14f71
+    nodeID: Node_635a0
+    speakerName: 
+    dialogueText: '[portrait:target=clear,pos=all,fade=1]'
     choices: []
