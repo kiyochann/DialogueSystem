@@ -49,12 +49,19 @@ namespace Runtime.Dialogue.Commands
             }
             if (targetStr == "canvas" || targetStr == "both")
             {
-                // CanvasGroup が付いているオブジェクトを探す（windowRoot にある想定）
+                // CanvasGroup が付いているオブジェクトを探す
                 var view = UnityEngine.Object.FindObjectOfType<DialogueViewWindow>();
-                if (view != null && view.windowRoot != null)
+                if (view != null)
                 {
-                    var cg = view.windowRoot.GetComponent<CanvasGroup>();
-                    if (cg != null) targetTrans = cg.transform;
+                    // まずビュー自身にCanvasGroupがあるか確認
+                    var cg = view.GetComponent<CanvasGroup>();
+                    if (cg == null)
+                    {
+                        // 見つからなければ子オブジェクトから探す
+                        cg = view.GetComponentInChildren<CanvasGroup>();
+                    }
+                    if (cg != null)
+                        targetTrans = cg.transform;
                 }
             }
 
