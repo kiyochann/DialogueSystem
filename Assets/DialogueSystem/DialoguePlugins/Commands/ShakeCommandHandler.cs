@@ -54,12 +54,20 @@ namespace Runtime.Dialogue.Commands
                 if (view != null)
                 {
                     // まずビュー自身にCanvasGroupがあるか確認
+                    var cg = view.GetComponentInParent<CanvasGroup>();
+                    /*
                     var cg = view.GetComponent<CanvasGroup>();
                     if (cg == null)
                     {
                         // 見つからなければ子オブジェクトから探す
                         cg = view.GetComponentInChildren<CanvasGroup>();
                     }
+                    if (cg == null)
+                    {
+                        // 見つからなければ親オブジェクトから探す
+                        
+                    }
+                    */
                     if (cg != null)
                         targetTrans = cg.transform;
                 }
