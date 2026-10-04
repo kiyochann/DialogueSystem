@@ -37,14 +37,14 @@ namespace Runtime.Dialogue.Commands
             Transform targetTrans = null;
             if (targetStr == "window" || targetStr == "both")
             {
-                var view = Object.FindObjectOfType<DialogueViewWindow>();
+                var view = UnityEngine.Object.FindObjectOfType<DialogueViewWindow>();
                 if (view != null && view.windowRoot != null)
                     targetTrans = view.windowRoot.transform;
             }
             if (targetStr == "canvas" || targetStr == "both")
             {
                 // CanvasGroup が付いているオブジェクトを探す（windowRoot にある想定）
-                var view = Object.FindObjectOfType<DialogueViewWindow>();
+                var view = UnityEngine.Object.FindObjectOfType<DialogueViewWindow>();
                 if (view != null && view.windowRoot != null)
                 {
                     var cg = view.windowRoot.GetComponent<CanvasGroup>();
@@ -72,7 +72,7 @@ namespace Runtime.Dialogue.Commands
                 shakeCoroutine = null;
             }
             // 変形をリセット
-            var view = Object.FindObjectOfType<DialogueViewWindow>();
+            var view = UnityEngine.Object.FindObjectOfType<DialogueViewWindow>();
             if (view != null && view.windowRoot != null)
             {
                 view.windowRoot.transform.localPosition = Vector3.zero;
@@ -80,7 +80,7 @@ namespace Runtime.Dialogue.Commands
             }
         }
 
-        private IEnumerator ShakeRoutine(Transform trans, float magnitude, float duration, string mode, Action onComplete)
+        private IEnumerator ShakeRoutine(Trans trans, float magnitude, float duration, string mode, Action onComplete)
         {
             Vector3 startPos = trans.localPosition;
             Quaternion startRot = trans.localRotation;
@@ -95,12 +95,12 @@ namespace Runtime.Dialogue.Commands
                 float x = 0f, y = 0f, z = 0f;
                 if (mode.Contains("pos") || mode == "both")
                 {
-                    x = Random.Range(-1f, 1f) * magnitude * damper;
-                    y = Random.Range(-1f, 1f) * magnitude * damper;
+                    x = UnityEngine.Random.Range(-1f, 1f) * magnitude * damper;
+                    y = UnityEngine.Random.Range(-1f, 1f) * magnitude * damper;
                 }
                 if (mode.Contains("rot") || mode == "both")
                 {
-                    z = Random.Range(-1f, 1f) * magnitude * damper; // Z軸回転として使用
+                    z = UnityEngine.Random.Range(-1f, 1f) * magnitude * damper; // Z軸回転として使用
                 }
 
                 trans.localPosition = startPos + new Vector3(x, y, 0f);
