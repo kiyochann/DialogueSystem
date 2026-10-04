@@ -10,8 +10,8 @@ namespace Runtime.Dialogue.Commands
     /// [shake:target=window|canvas|both,magnitude=5,time=0.5,mode=pos|rot|both] を処理するコマンドハンドラー
     /// </summary>
     [HandlerInfo(
-        description: "ダイアログウィンドウまたはCanvasGroupを指定した大きさ・時間で揺らします。",
-        usage: "[shake:target=window,magnitude=10,time=0.3,mode=pos]"
+        description: "ダイアログウィンドウまたはCanvasGroupを指定した大きさ・時間で揺らします。対象、大きさ、時間、モードを指定可能です。",
+        usage: "[shake:target=window|canvas|both,magnitude=5,time=0.5,mode=pos|rot|both]\n  target: 揺らす対象 (window: ダイアログウィンドウ, canvas: CanvasGroup, both: 両方)\n  magnitude: 揺れの大きさ（例: 5）\n  time: 揺れの継続時間（秒）（例: 0.5）\n  mode: 揺れの種類 (pos: 位置のみ, rot: 回転のみ, both: 両方)\n例: [shake:target=window,magnitude=10,time=0.3,mode=pos]"
     )]
     public class ShakeCommandHandler : MonoBehaviour, IDialogueCommandHandler
     {
