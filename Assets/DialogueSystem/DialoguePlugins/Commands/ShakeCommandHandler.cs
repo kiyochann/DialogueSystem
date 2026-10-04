@@ -63,10 +63,10 @@ namespace Runtime.Dialogue.Commands
             }
             if (targetStr == "canvas" || targetStr == "both")
             {
-                // CanvasGroup を「自身 → 子 → 親」の順で探す
+                // CanvasGroup を「自身 → 親 → 子親」の順で探す
                 CanvasGroup cg = view.GetComponent<CanvasGroup>();
-                if (cg == null) cg = view.GetComponentInChildren<CanvasGroup>();
                 if (cg == null) cg = view.GetComponentInParent<CanvasGroup>();
+                if (cg == null) cg = view.GetComponentInChildren<CanvasGroup>();
 
                 if (cg != null)
                 {
