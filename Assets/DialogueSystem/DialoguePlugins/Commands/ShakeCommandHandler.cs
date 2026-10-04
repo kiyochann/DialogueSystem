@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 using Runtime.Dialogue.Core;
@@ -80,7 +80,7 @@ namespace Runtime.Dialogue.Commands
             }
         }
 
-        private IEnumerator ShakeRoutine(Trans trans, float magnitude, float duration, string mode, Action onComplete)
+        private IEnumerator ShakeRoutine(Transform trans, float magnitude, float duration, string mode, Action onComplete)
         {
             Vector3 startPos = trans.localPosition;
             Quaternion startRot = trans.localRotation;
