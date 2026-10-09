@@ -1,0 +1,68 @@
+﻿# ==============================
+# Unity Caches & Generated
+# ==============================
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+sysinfo.txt
+
+# ==============================
+# IDEs & Git
+# ==============================
+.vs/
+.idea/
+.git/
+*.csproj
+*.unityproj
+*.sln
+
+# ==============================
+# Binary / Media / Assets
+# ==============================
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.tga
+*.tif
+*.psd
+*.wav
+*.mp3
+*.ogg
+*.aiff
+*.flac
+*.fbx
+*.obj
+*.blend
+*.dae
+*.glb
+*.gltf
+*.unity
+*.prefab
+*.mat
+*.asset
+*.anim
+*.controller
+*.overrideController
+*.renderTexture
+*.dll
+*.exe
+*.zip
+*.tar.gz
+*.7z
+
+# ==============================
+# Unity Meta Files
+# ==============================
+*.meta
+
+# ==============================
+# Packages & TMP Assets
+# ==============================
+Assets/TextMesh Pro/
+Assets/TutorialInfo/
