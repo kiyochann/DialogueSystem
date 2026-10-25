@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &606364964742435692
 GameObject:
@@ -2852,7 +2852,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f4151499d21eed48bdb658784322d6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueTesting
-  testData: {fileID: 11400000, guid: c506cc27cc8a72a44890eb3907072db7, type: 2}
+  testData: {fileID: 11400000, guid: 4847ebbb5b2444ea9a500eba50b24ef2, type: 2}
   dialogueView: {fileID: 6113977625182445273}
   backlogPanel: {fileID: 4667466376510772297}
   logContentParent: {fileID: 8811312004833692160}
@@ -3147,3 +3147,4 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -24,11 +24,43 @@ namespace Runtime.Dialogue
         [Tooltip("ログ1件分のテキスト表示用プレハブ")]
         [SerializeField] private GameObject logItemPrefab;
 
+        [SerializeField] private bool autoStartForTest = true;
+
         private void Start()
         {
             if (backlogPanel != null)
             {
                 backlogPanel.SetActive(false);
+            }
+
+            if (autoStartForTest)
+            {
+                StartCoroutine(AutoTestRoutine());
+            }
+        }
+
+        private System.Collections.IEnumerator AutoTestRoutine()
+        {
+            yield return new WaitForSeconds(1.0f);
+            if (DialogueManager.Instance != null && testData != null)
+            {
+                if (dialogueView != null)
+                {
+                    DialogueManager.Instance.RegisterView(dialogueView);
+                }
+
+                Debug.Log(">>> [EffectAutoTest] 会話テスト自動開始 <<<");
+                DialogueManager.Instance.StartDialogue(testData, () => {
+                    Debug.Log(">>> [EffectAutoTest] 全演出コマンドテスト完了 <<<");
+                });
+
+                // 各ノードの演出（1秒〜2秒）を見届けながら自動で次に進める
+                for (int i = 0; i < 7; i++)
+                {
+                    yield return new WaitForSeconds(2.0f);
+                    Debug.Log($">>> [EffectAutoTest] ノード進行 ({i + 1}/7) <<<");
+                    DialogueManager.Instance.HandleAdvanceInput();
+                }
             }
         }
 
