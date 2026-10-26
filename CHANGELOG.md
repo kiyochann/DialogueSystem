@@ -5,6 +5,13 @@ All notable changes to the DialogueSystem package/repository will be documented 
 ## [Unreleased] - 2026-09-28
 
 ### Added (新規追加機能)
+- **`DialogueManager` における `IDialogueView`（`DialogueViewWindow`）の自動取得・解決機能**:
+  - `DialogueManager.CurrentView` へのアクセス時や `StartDialogue` 呼び出し時に、Viewが未登録であれば自動的に解決する `ResolveDefaultView()` を追加。
+  - Inspector での直接指定（`defaultView`）に加え、シーン内からの検索（非アクティブ状態のUIも含む `FindObjectsInactive.Include`）、および `IDialogueView` 実装コンポーネントの網羅的探索をサポート。
+  - これにより、手動で `RegisterView()` を呼ばなくても、プレハブ配置またはシーン配置のみで即座に会話を開始可能に。
+  - `Dialogue.prefab` の `DialogueManager` に `defaultView` の参照を初期設定。
+- **`DialogueViewWindow.Start()` フォールバック登録**:
+  - `Awake` の実行順序により `DialogueManager.Instance` が未生成だった場合でも、`Start` のタイミングで自動的に `DialogueManager` へ自己登録する安全フォールバックを追加。
 - **`PrefabLayoutHandler` (`[layout:name=...]` / `[layout:prefab=...]`)**:
   - ダイアログの枠や装飾画像をPrefab単位で動的に生成・配置・差し替えるレイアウトハンドラーを新規実装。
   - `IDialogueLayoutHandler` に準拠し、既存のシステム構造を壊すことなくシームレスに機能。

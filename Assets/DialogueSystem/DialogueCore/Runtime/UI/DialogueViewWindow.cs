@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,6 +49,15 @@ namespace Runtime.Dialogue
                 DialogueManager.Instance.RegisterView(this);
             }
             CloseView();
+        }
+
+        private void Start()
+        {
+            // Awakeの実行順序によってDialogueManager.Instanceが未初期化だった場合のフォールバック登録
+            if (DialogueManager.Instance != null && DialogueManager.Instance.CurrentView == null)
+            {
+                DialogueManager.Instance.RegisterView(this);
+            }
         }
 
         public void InitializeView()

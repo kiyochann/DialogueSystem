@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &606364964742435692
 GameObject:
@@ -2826,6 +2826,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.DialogueManager
   currentContainer: {fileID: 11400000, guid: c506cc27cc8a72a44890eb3907072db7, type: 2}
+  defaultView: {fileID: 6113977625182445273}
   baseAutoWaitTime: 1
   autoWaitTimePerChar: 0.05
 --- !u!114 &1105928144692707219

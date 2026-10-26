@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Runtime.Dialogue.Core;
 using Runtime.Dialogue.Branching;
+using Runtime.Dialogue;
 
 namespace Runtime.Dialogue.Logic
 {
@@ -22,7 +23,23 @@ namespace Runtime.Dialogue.Logic
         public static DialogueManager Instance { get; private set; }
 
         [SerializeField] private DialogueContainer currentContainer;
-        public IDialogueView CurrentView { get; private set; }
+        [SerializeField, Tooltip("ダイアログUIのView。未指定の場合はシーン内から自動取得します")]
+        private DialogueViewWindow defaultView;
+
+        private IDialogueView currentView;
+        public IDialogueView CurrentView
+        {
+            get
+            {
+                if (currentView == null)
+                {
+                    ResolveDefaultView();
+                }
+                return currentView;
+            }
+            private set => currentView = value;
+        }
+
         public DialogueState CurrentState { get; private set; } = DialogueState.Idle;
 
         private DialogueNode currentNode;
@@ -47,8 +64,59 @@ namespace Runtime.Dialogue.Logic
 
         private void Awake()
         {
-            if (Instance == null) Instance = this;
-            else Destroy(gameObject);
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            ResolveDefaultView();
+        }
+
+        private void Start()
+        {
+            if (currentView == null)
+            {
+                ResolveDefaultView();
+            }
+        }
+
+        /// <summary>
+        /// シーンまたはInspectorからIDialogueView（DialogueViewWindow）を自動解決します。
+        /// </summary>
+        public void ResolveDefaultView()
+        {
+            if (currentView != null) return;
+
+            // 1. Inspectorで指定された defaultView があれば優先使用
+            if (defaultView != null)
+            {
+                RegisterView(defaultView);
+                return;
+            }
+
+            // 2. シーン内の DialogueViewWindow を検索（非アクティブも含む）
+            var foundWindow = UnityEngine.Object.FindAnyObjectByType<DialogueViewWindow>(FindObjectsInactive.Include);
+            if (foundWindow != null)
+            {
+                RegisterView(foundWindow);
+                return;
+            }
+
+            // 3. DialogueViewWindow 以外の IDialogueView 実装コンポーネントを検索（非アクティブも含む）
+            var allMonoBehaviours = UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (var mb in allMonoBehaviours)
+            {
+                if (mb is IDialogueView customView)
+                {
+                    RegisterView(customView);
+                    return;
+                }
+            }
         }
 
         // 外部入力待ちのロック/解除
@@ -86,6 +154,16 @@ namespace Runtime.Dialogue.Logic
 
         public void StartDialogue(string startNodeID = "")
         {
+            if (CurrentView == null)
+            {
+                ResolveDefaultView();
+            }
+
+            if (CurrentView == null)
+            {
+                Debug.LogWarning("[DialogueManager] 有効な IDialogueView（DialogueViewWindow等）が見つかりません。会話UIが表示されない可能性があります。");
+            }
+
             if (currentContainer == null)
             {
                 Debug.LogError("DialogueContainer が設定されていません！");
