@@ -826,6 +826,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96776bbc863df5d4a8e4c9716eb786df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.Dialogue.Plugins.Portraits.StandardUIPortraitHandler
+  portraitDatabases:
+  - {fileID: 11400000, guid: 013f5851111f43f5865379f198940e5c, type: 2}
   profiles:
   - {fileID: 11400000, guid: a93e4bc1904e7e342bb67f47525e6f30, type: 2}
   portraitSlots:
@@ -1622,8 +1624,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u3042"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: efc93d5a0d9bae44397cc795954f0b92, type: 2}
-  m_sharedMaterial: {fileID: 5939766848372476044, guid: efc93d5a0d9bae44397cc795954f0b92, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0f056e2ae1797f74fab674f778057942, type: 2}
+  m_sharedMaterial: {fileID: 881430976725680482, guid: 0f056e2ae1797f74fab674f778057942, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1960,8 +1962,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u3042"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: efc93d5a0d9bae44397cc795954f0b92, type: 2}
-  m_sharedMaterial: {fileID: 5939766848372476044, guid: efc93d5a0d9bae44397cc795954f0b92, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0f056e2ae1797f74fab674f778057942, type: 2}
+  m_sharedMaterial: {fileID: 881430976725680482, guid: 0f056e2ae1797f74fab674f778057942, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2858,6 +2860,7 @@ MonoBehaviour:
   backlogPanel: {fileID: 4667466376510772297}
   logContentParent: {fileID: 8811312004833692160}
   logItemPrefab: {fileID: 4600386041017602848, guid: cd5b4007e8ba25346a3d5a56b636c406, type: 3}
+  autoStartForTest: 1
 --- !u!114 &5856303786546874264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3148,4 +3151,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
-

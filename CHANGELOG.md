@@ -2,7 +2,54 @@
 
 All notable changes to the DialogueSystem package/repository will be documented in this file.
 
-## [Unreleased] - 2026-09-28
+## [Unreleased] - 2026-11-05
+
+### Added (新規追加機能)
+- **`DialoguePortraitDatabase` (立ち絵データベース機能)**:
+  - SE（`DialogueAudioDatabase`）と同様に、複数の `CharacterProfile`（キャラクター立ち絵プロファイル）を1つの ScriptableObject にまとめて管理できるデータベース機能を新設。
+  - 右クリックメニュー `Create` > `Dialogue` > `Portrait Database` から新規作成可能。
+  - `StandardUIPortraitHandler` に `portraitDatabases` リストを追加。インスペクターに1つデータベースをセットするだけで、登録された全キャラクターの立ち絵・表情・AnimatorControllerが利用可能に。
+  - 従来の `profiles`（個別登録リスト）もフォールバックとして完全維持（既存シーンやプレハブの互換性を保持）。
+  - SEと同様に、スクリプトから章ごと・シーンごとに動的ロードできる `AddDatabase(db, highPriority)`, `RemoveDatabase(db)`, `ClearDatabases()` を実装（将来の Addressables 動的ロードにも対応）。
+- **`PortraitCommandBuilderWindow` のデータベース対応と表情選択強化**:
+  - `handler.GetAllProfiles()` を通じて、データベース登録キャラクターと個別登録キャラクターの両方を自動収集しドロップダウンに一覧表示。
+  - キャラクター選択時に、そのキャラクターが持つ表情リスト（`expressions`）をドロップダウン（Popup）で選択可能に改善。スペルミスを防止。
+
+---
+
+## [1.1.0] - 2026-11-02
+
+### Added (新規追加機能)
+- **`GenericCallCommandHandler` の段階別詳細エラーフィードバック機能**:
+  - コール失敗時に「どの段階でなぜ失敗したか」を原因別に明確に切り分けてUnityコンソールに出力する診断ロジックを追加。
+    1. `[対象オブジェクト未検出]`: 指定された相手がシーン内に見つからない理由
+    2. `[スクリプト未検出]`: 対象にアタッチされているスクリプト一覧と要求スクリプトを比較表示
+    3. `[メソッド未検出]`: 対象クラスに定義されている公開メソッド一覧と要求メソッドを比較表示
+    4. `[引数の不適合 / オーバーロード解決失敗]`: 定義されているオーバーロード一覧・シグネチャと渡された引数を比較表示
+    5. `[呼び出し先メソッド内部で例外が発生]`: 実行先メソッドで発生した例外の種類・メッセージ・スタックトレースを表示
+- **`GenericCallCommandHandler` (`[call:...]`) の話しかけているオブジェクト自動指定モード (`mode=target` / `mode=current`)**:
+  - 会話相手（NPCやインタラクト対象）の GameObject を自動判別してメソッドを実行するモードを追加。
+  - 多段階フォールバックによる確実な対象解決：
+    1. `DialogueManager.Instance.CurrentTarget`（会話開始時に渡されたオブジェクト）
+    2. 現在のノードの話者名（`CurrentSpeaker`）と同名の GameObject（非アクティブ含む）
+    3. 該当スクリプトを持つ基準位置からの最近接オブジェクト
+  - `mode` を省略した場合でも、`target` や `tag` パラメータがなければデフォルトでこの `target` モードとして動作。
+- **`GenericCallCommandHandler` の `HandlerInfo` ドキュメント大幅拡充**:
+  - エディタウィンドウ（`Tools/Dialogue/Handler Info Window`）で表示される使用方法を大幅に詳細化。パラメータ一覧、各モードの挙動、使用例、エラーの見方を体系的に記載。
+- **`DialogueManager` 会話対象の保持 (`CurrentTarget`)**:
+  - 現在会話している対象オブジェクトを保持する `CurrentTarget` プロパティを追加。
+  - 会話開始時に話しかけた対象を直接渡せる `StartDialogue(container, target, onEnded)` オーバーロードおよび `SetCurrentTarget(target)` を追加。
+  - 会話終了時（`EndDialogue`）に自動的に `CurrentTarget = null` にリセット。
+
+### Changed (仕様変更・改善)
+- **`GenericCallCommandHandler` におけるオーバーロード対応と引数型変換**:
+  - 同名・引数違いのメソッドが定義されているクラス（例: `SceneLoader.LoadScene()` と `SceneLoader.LoadScene(string)`）を呼び出した際に発生していたリフレクション例外 `AmbiguousMatchException` を完全解消。
+  - `arg` の有無および型（`string`, `int`, `float`, `bool`）に合わせて最適なメソッドオーバーロードを自動探索・安全実行するように改善。
+  - 引数未指定時は引数なしメソッド（引数0個）を優先呼び出し、引数指定時は引数1個のメソッドを優先呼び出し。
+
+---
+
+## [1.0.0] - 2026-09-28
 
 ### Added (新規追加機能)
 - **`DialogueManager` における `IDialogueView`（`DialogueViewWindow`）の自動取得・解決機能**:
