@@ -2,7 +2,28 @@
 
 All notable changes to the DialogueSystem package/repository will be documented in this file.
 
-## [Unreleased] - 2026-11-05
+## [Unreleased] - 2026-11-07
+
+### Added (新規追加機能)
+- **`DialogueFontDatabase` (フォントスタイルデータベース機能)**:
+  - 複数のフォントスタイル（`default`, `horror`, `robot`, `pixel` 等）を1つの ScriptableObject にまとめて管理するデータベースを新設。
+  - 右クリックメニュー `Create` > `Dialogue` > `Font Database` から作成可能。
+  - 多言語切り替え時や Addressables による言語別フォントアセット分割ロードに対応。
+- **`CharacterProfile` への標準フォント設定 (`defaultFontStyle`)**:
+  - キャラクターごとに「話す時の標準フォントスタイル（例: robot, horror）」を指定可能に。空欄時は全体デフォルトフォントを自動適用。
+- **`DialogueViewWindow` の自動フォント適用と安全復帰**:
+  - 各セリフ（ノード）開始時に、話者のキャラクター設定に応じたフォントを自動適用。
+  - 一時的な演出フォントが使われた場合でも、次のセリフに進んだ瞬間に自動的にキャラ標準フォントへ安全復帰するライフサイクルを実装。
+- **`FontCommandHandler` (`[font:style=...]`)**:
+  - セリフ途中でフォントスタイルを一時的（または永続的）に切り替える演出コマンドを新設。
+  - `[font:style=horror]`（そのセリフ限定）、`[font:style=robot, keep=true]`（以降のセリフも維持）、`[font:reset]`（手動復帰）に対応。
+- **非破壊ローカライズ拡張インターフェース (`IDialogueTextResolver`)**:
+  - `DialogueCore` を一切破壊せず、Addressables や外部多言語パッケージの辞書を差し込めるプロバイダーインターフェースを新設。
+  - `DialogueManager.TextResolver` に登録するだけで、セリフ本文・話者名・選択肢テキストが自動的に多言語解決される。未設定時は通常通りノード記載のテキストがそのまま使われる完全非破壊動作。
+
+---
+
+## [1.2.0] - 2026-11-05
 
 ### Added (新規追加機能)
 - **`DialoguePortraitDatabase` (立ち絵データベース機能)**:

@@ -27,6 +27,11 @@ namespace Runtime.Dialogue
 
         [Header("Fonts")]
         [SerializeField] private TMP_FontAsset defaultFont;
+        [SerializeField, Tooltip("フォントスタイルを管理するデータベース（未設定時は defaultFont が使用されます）")]
+        private DialogueFontDatabase fontDatabase;
+
+        private bool isFontPersistent = false;
+        private string currentSpeakerID = "";
 
         private Coroutine typingCoroutine;
         private string currentFullText;
@@ -60,6 +65,78 @@ namespace Runtime.Dialogue
             }
         }
 
+        /// <summary>
+        /// フォントスタイル名（default, horror, robot等）からフォントを適用します。
+        /// </summary>
+        /// <summary>
+        /// 使用するフォントデータベースを動的に変更します（多言語対応・言語切り替え用）。
+        /// </summary>
+        public void SetFontDatabase(DialogueFontDatabase db)
+        {
+            fontDatabase = db;
+            ResetFont();
+        }
+
+        public DialogueFontDatabase FontDatabase => fontDatabase;
+
+        public void SetFontStyle(string styleName, bool persistent = false)
+        {
+            TMP_FontAsset targetFont = null;
+            if (fontDatabase != null)
+            {
+                targetFont = fontDatabase.GetFont(styleName);
+            }
+            if (targetFont == null)
+            {
+                targetFont = defaultFont;
+            }
+            SetFont(targetFont, persistent);
+        }
+
+        /// <summary>
+        /// フォントアセットを直接適用します。
+        /// </summary>
+        public void SetFont(TMP_FontAsset font, bool persistent = false)
+        {
+            if (bodyText != null && font != null)
+            {
+                bodyText.font = font;
+            }
+            isFontPersistent = persistent;
+        }
+
+        /// <summary>
+        /// 現在の話者またはデフォルトフォントに復帰（リセット）します。
+        /// </summary>
+        public void ResetFont()
+        {
+            isFontPersistent = false;
+            ApplySpeakerFont(currentSpeakerID);
+        }
+
+        /// <summary>
+        /// 現在の話者の CharacterProfile に基づいてフォントを適用します。
+        /// 永続フラグが立っていない限り、各セリフの開始時に自動呼び出しされます。
+        /// </summary>
+        public void ApplySpeakerFont(string speakerID)
+        {
+            currentSpeakerID = speakerID;
+            if (isFontPersistent) return;
+
+            string style = "default";
+            var portraitHandler = UnityEngine.Object.FindAnyObjectByType<Runtime.Dialogue.Plugins.Portraits.StandardUIPortraitHandler>();
+            if (portraitHandler != null && !string.IsNullOrEmpty(speakerID))
+            {
+                var profile = portraitHandler.FindProfile(speakerID);
+                if (profile != null && !string.IsNullOrEmpty(profile.defaultFontStyle))
+                {
+                    style = profile.defaultFontStyle;
+                }
+            }
+
+            SetFontStyle(style, false);
+        }
+
         public void InitializeView()
         {
             if (windowRoot != null) windowRoot.SetActive(true);
@@ -75,6 +152,7 @@ namespace Runtime.Dialogue
 
         public void CloseView()
         {
+            isFontPersistent = false;
             if (windowRoot != null) windowRoot.SetActive(false);
             if (bodyText != null) bodyText.enabled = false;
             if (nameText != null) nameText.enabled = false;
@@ -85,6 +163,7 @@ namespace Runtime.Dialogue
         public void DisplaySentence(string speakerID, string cleanText, List<DialogueCommand> commands, Action onTypingComplete)
         {
             InitializeView();
+            ApplySpeakerFont(speakerID);
 
             if (nameText != null) nameText.text = speakerID;
             currentFullText = cleanText;
