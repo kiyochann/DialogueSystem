@@ -1,0 +1,25 @@
+{
+  "name": "com.kiyochann.dialoguesystem",
+  "version": "1.2.0",
+  "displayName": "Dialogue System",
+  "description": "A modular, node-based dialogue system for Unity with plugin support (portraits, audio, branching, commands, localization, custom fonts).",
+  "unity": "6000.0",
+  "documentationUrl": "https://github.com/kiyochann/DialogueSystem",
+  "changelogUrl": "https://github.com/kiyochann/DialogueSystem/blob/main/CHANGELOG.md",
+  "author": {
+    "name": "kiyochann",
+    "url": "https://github.com/kiyochann"
+  },
+  "keywords": [
+    "dialogue",
+    "conversation",
+    "narrative",
+    "rpg",
+    "visual-novel",
+    "unity"
+  ],
+  "dependencies": {
+    "com.unity.ugui": "2.0.0",
+    "com.unity.inputsystem": "1.19.0"
+  }
+}
